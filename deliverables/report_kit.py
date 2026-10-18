@@ -86,6 +86,29 @@ def _cell_margins(cell, cm=0.25):
     tc_pr.append(mar)
 
 
+TEXT_WIDTH_CM = 16.6
+
+
+def _set_widths(t, widths_cm):
+    t.autofit = False
+    tbl_pr = t._tbl.tblPr
+    lay = OxmlElement("w:tblLayout")
+    lay.set(qn("w:type"), "fixed")
+    tbl_pr.append(lay)
+    for ci, w in enumerate(widths_cm):
+        t.columns[ci].width = Cm(w)
+        for row in t.rows:
+            row.cells[ci].width = Cm(w)
+
+
+def _no_split(row, header=False):
+    tr_pr = row._tr.get_or_add_trPr()
+    el = OxmlElement("w:cantSplit")
+    tr_pr.append(el)
+    if header:
+        tr_pr.append(OxmlElement("w:tblHeader"))
+
+
 def new_document() -> Document:
     doc = Document()
     sec = doc.sections[0]
@@ -132,7 +155,7 @@ def cover(doc: Document, title: str, subtitle: str, task_label: str, facts: list
         _shade(a, LIGHT)
         a.text, b.text = k, v
         a.paragraphs[0].runs[0].font.bold = True
-        a.width, b.width = Cm(4.5), Cm(12.0)
+    _set_widths(t, [4.5, TEXT_WIDTH_CM - 4.5])
     doc.add_paragraph()
     p = doc.add_paragraph()
     r = p.add_run(f"{AUTHOR} · {dt.date(2026, 10, 18):%d %B %Y}")
@@ -163,7 +186,19 @@ def bullets(doc: Document, items, style="List Bullet"):
 
 
 def numbered(doc: Document, items):
-    bullets(doc, items, style="List Number")
+    for n, it in enumerate(items, 1):
+        p = doc.add_paragraph()
+        p.paragraph_format.left_indent = Cm(0.75)
+        p.paragraph_format.first_line_indent = Cm(-0.75)
+        p.paragraph_format.tab_stops.add_tab_stop(Cm(0.75))
+        r = p.add_run(f"{n}.\t")
+        r.bold, r.font.color.rgb = True, _rgb(TEAL)
+        if isinstance(it, tuple):
+            r = p.add_run(it[0] + " ")
+            r.bold = True
+            p.add_run(it[1])
+        else:
+            p.add_run(it)
 
 
 def callout(doc: Document, title: str, text: str | list[str], color: str = TEAL):
@@ -172,6 +207,8 @@ def callout(doc: Document, title: str, text: str | list[str], color: str = TEAL)
     c = t.rows[0].cells[0]
     _shade(c, color)
     _cell_margins(c, 0.35)
+    _set_widths(t, [TEXT_WIDTH_CM])
+    _no_split(t.rows[0])
     p = c.paragraphs[0]
     r = p.add_run(title)
     r.bold, r.font.size, r.font.color.rgb = True, Pt(12), _rgb("#FFFFFF")
@@ -208,10 +245,15 @@ def table(doc: Document, headers: list[str], rows: list[list[str]], widths_cm: l
                     r.bold = True
             elif ri % 2 == 0:
                 _shade(c, LIGHT)
-    if widths_cm:
-        for row in t.rows:
-            for ci, w in enumerate(widths_cm):
-                row.cells[ci].width = Cm(w)
+    if not widths_cm:
+        widths_cm = [TEXT_WIDTH_CM / len(headers)] * len(headers)
+    _set_widths(t, widths_cm)
+    for i, row in enumerate(t.rows):
+        _no_split(row, header=i == 0)
+        if i < len(t.rows) - 1:
+            for c in row.cells:
+                for p in c.paragraphs:
+                    p.paragraph_format.keep_with_next = True
     doc.add_paragraph()
     return t
 
@@ -226,6 +268,7 @@ def figure(doc: Document, path: Path, caption: str, width_cm: float = 16.0):
     _fig_no["n"] += 1
     doc.add_picture(str(path), width=Cm(width_cm))
     doc.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
+    doc.paragraphs[-1].paragraph_format.keep_with_next = True
     p = doc.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
     r = p.add_run(f"Figure {_fig_no['n']}. ")
@@ -238,8 +281,6 @@ def reset_figures():
     _fig_no["n"] = 0
 
 
-def page_break(doc: Document):
-    doc.add_paragraph().add_run().add_break(WD_BREAK.PAGE)
 
 
 def footer(doc: Document, text: str):
@@ -256,6 +297,7 @@ def kpi_strip(doc: Document, items: list[tuple[str, str, str]]):
     """A row of coloured tiles: (big value, label, colour)."""
     t = doc.add_table(rows=1, cols=len(items))
     t.alignment = WD_TABLE_ALIGNMENT.CENTER
+    _set_widths(t, [TEXT_WIDTH_CM / len(items)] * len(items))
     for i, (val, label, color) in enumerate(items):
         c = t.rows[0].cells[i]
         _shade(c, color)

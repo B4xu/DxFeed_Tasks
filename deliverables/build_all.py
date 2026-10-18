@@ -13,6 +13,7 @@ STEPS = [
     ("Task B report", HERE / "taskB_incident" / "build_report.py"),
     ("Task A report", HERE / "taskA_holidays" / "build_report.py"),
     ("Task C deck", HERE / "taskC_presentation_pack" / "build_pack.py"),
+    ("PDF export", HERE / "export_pdfs.py"),
 ]
 
 

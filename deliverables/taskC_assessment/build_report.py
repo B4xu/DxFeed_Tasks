@@ -50,7 +50,7 @@ def build() -> Path:
             ("Scope", "dxFeed demo REST (events.json) and SSE (eventSource), Radar web tool"),
             ("Instruments", "AAPL (US stock), EUR/USD (FX), TSLA (high volatility), /ESZ26:XCME (futures control)"),
             ("When", "Friday 16 October 2026, 11:10–14:00 UTC (pre-market and US regular hours)"),
-            ("Evidence", "taskC_assessment/evidence/ — every number below is reproducible offline"),
+            ("Evidence", "taskC_assessment/evidence/. Every number below can be recomputed offline"),
             ("Status legend", "Verified = reproduced from saved evidence · Hypothesis = plausible, unproven · Not done = needs live access"),
         ],
     )
@@ -62,7 +62,7 @@ def build() -> Path:
             "customer complaint about data quality: pull enough history to have a statistically useful "
             "sample, rebuild every larger timeframe from the smaller one, compare against what the service "
             "serves, and then push the service with a polite, self-limiting load test. Everything was "
-            "logged — URL, parameters, UTC time, latency, body hash — so any number in this report can be "
+            "logged (URL, parameters, UTC time, latency, body hash), so any number in this report can be "
             "recomputed from disk without touching the demo again.")
     rk.kpi_strip(doc, [
         (f"{total:,}", "candles analysed", rk.NAVY),
@@ -88,13 +88,12 @@ def build() -> Path:
          "service never sends 429 or Retry-After."),
     ])
     rk.callout(doc, "What this report does not claim", [
-        "• No root cause for the volume split — the TimeAndSale feed needed to test it is not available on the demo.",
-        "• No production capacity number — one client, one IP, a shared free demo.",
-        "• No post-weekend re-check — pass 2 and the Monday reopen were not run.",
+        "• No root cause for the volume split. The TimeAndSale feed I needed to test it does not work on the demo.",
+        "• No production capacity number. This was one client, one IP, on a shared free demo.",
+        "• No post-weekend re-check. Pass 2 and the Monday reopen were not run.",
     ], rk.SLATE)
 
     # ---------------------------------------------------------------- approach
-    rk.page_break(doc)
     doc.add_heading("2. How I approached it", level=1)
     rk.para(doc,
             "Before writing any analysis code I spent the first hour on reconnaissance. The REST help page "
@@ -126,14 +125,13 @@ def build() -> Path:
     ])
     figure_candles = CH / "candle_totals.png"
     rk.figure(doc, figure_candles, "Candles retrieved in pass 1 per instrument and period. The 1-minute series all stop "
-              "at about 8,000 — the retention cap described in finding 3.2.")
+              "at about 8,000, which is the retention cap in finding 3.2.")
 
     # ---------------------------------------------------------------- part 1
-    rk.page_break(doc)
-    doc.add_heading("3. Part 1 — data consistency and integrity", level=1)
+    doc.add_heading("3. Part 1: data consistency and integrity", level=1)
     doc.add_heading("3.1 What is right", level=2)
     rk.para(doc,
-            f"It matters to say what works before listing anomalies. Across the 12 series ({total:,} candles) there "
+            f"I want to start with what works. Across the 12 series ({total:,} candles) there "
             "are no timestamps off the interval grid, no out-of-order responses, no NaN prices and no candle "
             "whose open or close falls outside its own high–low range. Chunked downloads produce 21 boundary "
             "duplicates because toTime is inclusive, and all 21 carry identical values, so de-duplication is safe. "
@@ -153,7 +151,7 @@ def build() -> Path:
     rk.para(doc,
             "A two-week request for AAPL 1-minute candles returns the newest 8,000 (TSLA and ES 8,001 after merging) "
             "and simply stops, with status OK. The same happens for 5-minute data: EUR/USD from 1 August returns "
-            "8,000 candles starting 9 September. The decisive test was a window that lies entirely before that edge: "
+            "8,000 candles starting 9 September. The test that settled it was a window entirely before that edge: "
             "it also answers OK, with an empty 15-byte body. That rules out a response-size limit and confirms a "
             "retention limit, and it means a request for older data is indistinguishable from a holiday.")
     rk.callout(doc, "Why it matters", "A backtest asking for 'the last two weeks of 1-minute bars' silently loses the "
@@ -161,9 +159,9 @@ def build() -> Path:
 
     doc.add_heading("3.3 Hourly volume does not equal the 5-minute sum (verified pattern, cause unknown)", level=2)
     rk.para(doc,
-            "This is the most interesting finding. Rebuilding AAPL hourly candles from 5-minute candles, 131 of 208 "
+            "This is the finding I spent most time on. Rebuilding AAPL hourly candles from 5-minute candles, 131 of 208 "
             "hours disagree on volume. 130 of them are outside regular hours and in every one the served hourly bar "
-            "has more volume than the sum of its 5-minute bars — up to 99 %: on 7 October at 17:00 ET the hourly "
+            "has more volume than the sum of its 5-minute bars, by up to 99 %. On 7 October at 17:00 ET the hourly "
             "bar reports 743,918 shares against 6,422 from the 5-minute bars. TSLA shows the same shape: 118 "
             "extended-hours hours plus 2 regular-hours ones. 5-minute and 1-minute candles agree on every complete "
             "bucket, so the split is specifically between the hourly record and the intraday records.")
@@ -172,7 +170,7 @@ def build() -> Path:
               "day. Red = the served hourly bar carries more volume. Regular hours (boxed) are white except one hour.")
     rk.para(doc,
             "The single regular-hours exception is the most informative row. On 8 October at 11:00 ET the rebuilt "
-            "volume is about 2 % higher than the served hourly bar — the opposite sign — while open, high, low and "
+            "volume is about 2 % higher than the served hourly bar, so the sign is reversed, while open, high, low and "
             "close are identical and the hour is complete (12 of 12 five-minute bars). The two TSLA regular-hours "
             "exceptions fall on the same day and overlapping hours, which points at a market- or venue-wide event "
             "rather than something about AAPL. Re-fetching both hourly bars 11.5 minutes apart returned identical "
@@ -184,7 +182,7 @@ def build() -> Path:
             f"{vr['1m']:,.0f} ({vr['1m_vs_daily_pct']:+.2f} %). The hourly series is closer, and on every other full "
             "day the hourly total is at least the 1-minute total. That suggests the intraday series is the one "
             "missing prints, but it is a single data point. I therefore do not advise customers to rebuild "
-            "extended-hours analytics from 1-minute data; the honest answer today is 'we are confirming which "
+            "extended-hours analytics from 1-minute data; what I would tell a client today is 'we are confirming which "
             "series is the reference'.")
     rk.figure(doc, CH / "volume_reconcile.png",
               "Left: AAPL volume per New York day, summed from 1-minute vs hourly candles. Right: the only day with "
@@ -197,7 +195,7 @@ def build() -> Path:
         ["Client-side summation error", "—", "1m ≡ 5m on volume and count; bid + ask = volume on both sides", "Rejected"],
     ], widths_cm=[5.2, 4.4, 4.6, 2.4], status_col=3)
     rk.para(doc,
-            "The discriminating test — reading sale conditions from TimeAndSale for one mismatching hour — is "
+            "The test that would settle it is reading sale conditions from TimeAndSale for one mismatching hour. It is "
             "blocked: TimeAndSale and Trade history return TIMED_OUT or empty on the demo. Checking SPY and MSFT for "
             "8 October 11:00 ET, and re-requesting with tho=true, both need live calls and were not done.",
             bold_lead="What would settle it.")
@@ -207,7 +205,7 @@ def build() -> Path:
             "An earlier draft said OHLC always agrees across timeframes. It does not. Six hourly candles differ from "
             "their 5-minute rebuild in at least one price field. Three are the still-forming 11:00Z bar at fetch time, "
             "which is expected. Three are complete hours: AAPL on 2 October 21:00Z (close 333.35 rebuilt vs 333.3015 "
-            "served) and TSLA on 8 October 15:00Z and 16:00Z — the same regular-hours block as the volume exception. "
+            "served) and TSLA on 8 October 15:00Z and 16:00Z, the same regular-hours block as the volume exception. "
             "The differences are tiny, at most 0.023 %, but they are real.")
     rk.figure(doc, CH / "ohlc_mismatches.png", "Every price-field difference between served hourly candles and the 5-minute rebuild.")
 
@@ -217,7 +215,7 @@ def build() -> Path:
             "reported 214 'weekend' candles. 170 of those are Sunday 17:00–19:59 ET, which is the normal reopen and "
             "not an anomaly at all. Counting against the actual FX session leaves 50 one-minute candles (39 at "
             "5 minutes): 7 just after the Friday close, none on Saturday New York time, and 43 sparse prints on "
-            "Sunday before the reopen — a single tick at 09:20 ET, then a thin ramp from 14:00 ET. The ES futures "
+            "Sunday before the reopen: a single tick at 09:20 ET, then a thin ramp from 14:00 ET. The ES futures "
             "control has zero candles outside its session, so the method itself is sound.")
     rk.figure(doc, CH / "fx_outside_session.png", "Left: the 50 out-of-session EUR/USD candles by bucket. Right: how the UTC-weekday tag inflated the count.")
     rk.para(doc,
@@ -239,8 +237,7 @@ def build() -> Path:
     rk.figure(doc, CH / "quote_age.png", "Quote age at response time across both load runs: a hard floor at 900 seconds.")
 
     # ---------------------------------------------------------------- part 2
-    rk.page_break(doc)
-    doc.add_heading("4. Part 2 — behaviour under load", level=1)
+    doc.add_heading("4. Part 2: behaviour under load", level=1)
     rk.para(doc,
             "The load test was designed to be polite and self-limiting: one aiohttp session, each worker holding at "
             "most one request, 0.25 s think time, 30-second steps at 1, 5, 10, 25 and 50 workers with 10-second "
@@ -262,7 +259,7 @@ def build() -> Path:
               f"{pm[25]['rps_through_completion']:.2f} req/s, market hours at about 3 req/s and then declines.")
     rk.para(doc,
             "The picture is a service that saturates early and then queues. Going from 5 to 50 workers in market hours "
-            "did not add throughput — it fell slightly from 3.18 to 2.78 req/s — while median latency rose from 1.1 to "
+            "did not add throughput. It fell slightly, from 3.18 to 2.78 req/s, while median latency rose from 1.1 to "
             "8.3 seconds and p95 to 26.6 seconds. Nothing ever failed: 648 load requests, zero HTTP errors, no 429, no "
             "Retry-After header. A naive client that adds parallelism when things get slow only makes its own latency "
             "worse, and the service never tells it to back off.")
@@ -291,7 +288,7 @@ def build() -> Path:
     doc.add_heading("Consistency, caching and freshness under load", level=3)
     rk.bullets(doc, [
         ("Consistency:", "the fixed historical window returned byte-identical bodies on every repeat (AAPL 66/66, TSLA 62/62)."),
-        ("Caching:", "no Cache-Control, ETag or Age headers, and repeats were not faster than the first call — no sign of an HTTP cache."),
+        ("Caching:", "no Cache-Control, ETag or Age headers, and repeats were not faster than the first call, so there is no sign of an HTTP cache."),
         ("Freshness:", "quote age stayed at about 900 seconds at every step: load changes latency, not freshness."),
         ("Censoring:", "percentiles use completed requests only, so at 25 and 50 workers they understate the true tail."),
         ("Streaming:", "SSE was ahead of REST by a median 0.26 s in market hours; with a 5-second REST poll that is a lower bound, not a precise lag."),
@@ -309,8 +306,7 @@ def build() -> Path:
     ], widths_cm=[5.2, 5.4, 6.0])
 
     # ---------------------------------------------------------------- part 3
-    rk.page_break(doc)
-    doc.add_heading("5. Part 3 — operational risk review", level=1)
+    doc.add_heading("5. Part 3: operational risk review", level=1)
     rk.para(doc,
             "I ranked risks by how often I actually saw them and by how much damage a silent failure does compared with "
             "a loud one. Silent and decision-affecting ranks above loud and cosmetic.")
@@ -322,10 +318,10 @@ def build() -> Path:
         ["5", "Symbol and asset-class quirks", "TIMED_OUT on 200; FX bid-only", "Medium", "Medium", "Publish symbol list; distinct UNKNOWN_SYMBOL status"],
         ["6", "Out-of-session FX prints", "Finding 3.5 (50 candles)", "Every weekend", "Low–medium", "Session-calendar filter, not UTC weekday"],
         ["7", "Monitoring blind spot", "OK on partial results; no rate-limit headers", "High", "Medium", "Synthetic probes per asset class"],
-    ], widths_cm=[0.8, 4.0, 3.4, 2.4, 2.4, 4.2], font_size=9)
+    ], widths_cm=[0.8, 4.0, 3.4, 2.2, 2.2, 4.0], font_size=9)
 
     # ---------------------------------------------------------------- part 4
-    doc.add_heading("6. Part 4 — incident simulation INC-SIM-01", level=1)
+    doc.add_heading("6. Part 4: incident simulation INC-SIM-01", level=1)
     rk.callout(doc, "This is a simulation", "The scenario and its timestamps are invented; every measurement quoted is "
                "real and reproducible from the evidence folder.", rk.AMBER)
     rk.para(doc,
@@ -368,17 +364,17 @@ def build() -> Path:
     ])
 
     # ---------------------------------------------------------------- part 5
-    doc.add_heading("7. Part 5 — three product improvements", level=1)
+    doc.add_heading("7. Part 5: three product improvements", level=1)
     rk.table(doc, ["Area", "Problem (evidence)", "Proposal", "Complexity", "Business impact"], [
         ["Technical", "Silent cap, unflagged forming candle, no delay in payload, slow TIMED_OUT for unknown symbols",
          "Response envelope with truncated, limit, serverTime, delaySeconds, lastEventTime; flag the forming candle; immediate UNKNOWN_SYMBOL",
-         "Medium — additive JSON, but touches web tier and feed layer", "Removes the two most likely 'your data is wrong' tickets"],
+         "Medium. Additive JSON, but it touches the web tier and the feed layer", "Removes the two most likely 'your data is wrong' tickets"],
         ["Monitoring", "Nothing server-side would catch findings 3.2–3.5 or the queueing",
          "One synthetic probe per asset class: age vs calendar, completeness, 1h-vs-1m, p95 at c=1 and 5, TIMED_OUT ratio",
-         "Small–medium — the scripts exist; wiring and a session calendar remain", "Client-reported incidents become internally detected"],
+         "Small to medium. The scripts exist; wiring and a session calendar remain", "Client-reported incidents become internally detected"],
         ["Documentation", "Candle syntax, price=bid, delay, symbol list, cap, inclusive toTime, UTC daily stamp each needed experiments",
          "One 'demo service facts' page with worked examples and Radar-vs-REST differences",
-         "Small — this report is the draft", "Fewer first-contact tickets, faster evaluations"],
+         "Small. This report is the draft", "Fewer first-contact tickets, faster evaluations"],
     ], widths_cm=[2.2, 4.0, 4.6, 3.0, 2.8], font_size=9)
 
     # ---------------------------------------------------------------- not done
@@ -391,11 +387,11 @@ def build() -> Path:
         ["tho=true re-request", "Not done", "Needs live API calls"],
         ["Burst and batching tests", "Not done", "Ramp only; no one-shot burst or 13-in-1 batching comparison"],
         ["Second client / IP", "Not done", "Needed to separate per-IP throttle from shared capacity"],
-        ["Production capacity", "Not done", "Out of scope — shared free demo"],
+        ["Production capacity", "Not done", "Out of scope: shared free demo"],
     ], widths_cm=[5.4, 2.4, 8.8], status_col=1)
 
     # ---------------------------------------------------------------- appendix
-    doc.add_heading("Appendix — reproduce offline", level=1)
+    doc.add_heading("Appendix: reproduce offline", level=1)
     rk.para(doc, "From deliverables/taskC_assessment/scripts with the dxfeed conda environment:")
     for cmd in ("python validate_candles.py --pass pass1", "python analyze_load.py --run market_hours_fri",
                 "python offline_recheck.py", "python make_report_charts.py", "python ../build_report.py"):

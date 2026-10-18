@@ -54,7 +54,7 @@ def chain_diagram():
         ax.text(x, 1.7, t, ha="center", va="top", fontsize=9.5, color=c, fontweight="bold")
         ax.plot([x, x], [1.8, 2.55], color=c, lw=1, ls=":")
     ax.text(5.5, 4.35, "Symptoms mapped onto the call path", ha="center", fontsize=14, fontweight="bold", color=NAVY)
-    ax.text(5.5, 0.25, "Reading: the 5 s timeouts sit at the API but the wait is downstream — a slow query holds the pool, "
+    ax.text(5.5, 0.25, "Reading: the 5 s timeouts sit at the API but the wait is downstream: a slow query holds the pool, "
             "everything behind it queues.", ha="center", fontsize=9.5, color=SLATE, style="italic")
     p = CH / "call_path.png"
     fig.savefig(p)
@@ -113,7 +113,7 @@ def decision_tree():
     ax.axis("off")
     _box(ax, 3.6, 4.3, 3.8, 0.8, "T+30: errors still 5–8 %?", NAVY, 11)
     _box(ax, 0.3, 2.6, 4.0, 0.9, "Yes, cause not isolated\n→ ESCALATE now (SEV-2)", CORAL, 10.5)
-    _box(ax, 6.7, 2.6, 4.0, 0.9, "No — back to baseline\nfor 15 min after a fix", GREEN, 10.5)
+    _box(ax, 6.7, 2.6, 4.0, 0.9, "No: back to baseline\nfor 15 min after a fix", GREEN, 10.5)
     _arrow(ax, 4.6, 4.3, 2.3, 3.5, CORAL, "yes")
     _arrow(ax, 6.4, 4.3, 8.7, 3.5, GREEN, "no")
     _box(ax, 0.3, 0.4, 4.0, 1.7, "Backend on-call (pool, retries, query)\nDB / platform on-call (locks, sessions)\nIncident commander (comms)\nOne message, then a bridge", NAVY, 9.5)
@@ -161,12 +161,10 @@ def build() -> Path:
                        ("100/100", "pool connections busy", CORAL), ("4.8 s", "slow query", NAVY),
                        ("T+30", "escalate", TEAL)])
     rk.figure(doc, chain, "Every symptom from the scenario placed on the call path.")
-
-    rk.page_break(doc)
     doc.add_heading("2. Investigation plan", level=1)
     doc.add_heading("2.1 First five minutes: golden signals per tier", level=2)
     rk.para(doc,
-            "I start with the four golden signals — errors, latency, traffic, saturation — for each tier, because a "
+            "I start with the four golden signals (errors, latency, traffic, saturation) for each tier, because a "
             "table like this shows within minutes where the time is going, and it is the same table I will paste "
             "into the escalation.")
     rk.table(doc, ["Signal", "API", "Internal service", "Database"], [
@@ -178,8 +176,8 @@ def build() -> Path:
     doc.add_heading("2.2 The steps", level=2)
     rk.figure(doc, tl, "How the first thirty minutes overlap.")
     rk.para(doc,
-            "Confirm the alert and the customer report describe the same thing — 502s on /api/orders, not a dashboard "
-            "artefact — note the exact start time from the metric and open an incident channel with a running "
+            "Confirm the alert and the customer report describe the same thing (502s on /api/orders, not a dashboard "
+            "artefact), note the exact start time from the metric and open an incident channel with a running "
             "timeline. Everything later, including the escalation, hangs off that start time.",
             bold_lead="Step 0 (minutes 0–2): acknowledge.")
     rk.para(doc,
@@ -213,19 +211,17 @@ def build() -> Path:
     rk.table(doc, ["Mitigation", "Expected effect", "Risk"], [
         ["Drain/restart the two hot instances, one at a time", "Relief if the instances are the problem", "If the DB is the cause, load just moves"],
         ["Cap retries (one, jittered, idempotent reads only)", "Immediate relief from amplification", "Slightly higher visible error rate"],
-        ["Kill the long query or block the pattern/tenant", "Often decisive", "May abort a legitimate job — record and tell the owner"],
+        ["Kill the long query or block the pattern/tenant", "Often fixes it", "May abort a legitimate job; record it and tell the owner"],
         ["Raise pool size or timeout", "Only with clear DB headroom", "Bigger pool loads a slow DB more; longer timeout hides the problem"],
         ["Rate-limit the expensive endpoint for one tenant", "Protects other customers", "That tenant sees more errors"],
     ], widths_cm=[5.4, 5.0, 6.2])
     rk.callout(doc, "Quantifying impact", "Failed requests per minute = error rate × request rate; number of tenants above "
                "1 % errors; the enterprise customer's failure share; duration so far; SLA budget burned. Every "
                "mitigation gets a timestamp and an observed effect in the timeline.", TEAL)
-
-    rk.page_break(doc)
     doc.add_heading("3. Escalation decision at T+30", level=1)
     rk.para(doc,
             "Thirty minutes in, the error rate still swings between 5 and 8 %, CPU is still high on two instances, and "
-            "the cause is not isolated. I escalate now — and I would have had the message drafted at T+15 when the "
+            "the cause is not isolated. I escalate now, and I would have had the message drafted at T+15 when the "
             "first mitigations did not hold. The reasons are customer impact on an order endpoint, thirty minutes "
             "without a stable fix, and evidence pointing at a database and pool problem that L2 cannot fix alone.")
     rk.figure(doc, tree, "The T+30 decision and what would change it.")

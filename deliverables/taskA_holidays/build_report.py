@@ -67,7 +67,7 @@ def chart_rows(df):
     ax.bar(exs, early, bottom=closed, color=AMBER, label="Early close (13:00 local)")
     for i, (c, e) in enumerate(zip(closed, early)):
         ax.text(i, c + e + 0.6, f"{c + e}", ha="center", fontweight="bold", color=NAVY)
-    ax.annotate("0 rows — scraping forbidden,\nmanual input folder empty", (3, 0.3), xytext=(2.5, 22),
+    ax.annotate("0 rows: scraping forbidden,\nmanual input folder empty", (3, 0.3), xytext=(2.5, 22),
                 color=CORAL, fontsize=10, ha="center", arrowprops=dict(arrowstyle="->", color=CORAL))
     ax.set_ylabel("Rows in the published CSVs")
     ax.set_title("What the live run on 16 October 2026 returned")
@@ -147,9 +147,9 @@ def build() -> Path:
              "How it was built, every logical step it takes, what the live run produced and what it refuses to do",
              "Task A · L2 Support Engineer assessment",
              [("Live run", f"{meta['run_ts'][:19].replace('T', ' ')} UTC · overall validation {meta['level']}"),
-              ("Rows", f"{meta['rows']} — NYSE {counts['NYSE']}, NASDAQ {counts['NASDAQ']}, OPRA {counts['OPRA']}, CME {counts['CME']}"),
+              ("Rows", f"{meta['rows']}: NYSE {counts['NYSE']}, NASDAQ {counts['NASDAQ']}, OPRA {counts['OPRA']}, CME {counts['CME']}"),
               ("Code", "deliverables/taskA_holidays/scraper/ (Python 3.12), 11 offline tests"),
-              ("Automation", ".github/workflows/trading-holidays.yml — weekly and on demand"),
+              ("Automation", ".github/workflows/trading-holidays.yml, weekly and on demand"),
               ("Published to", "Google Drive (four CSVs, uploaded by hand on 18 Oct) and the GitHub repository")])
 
     # ---------------------------------------------------------------- 1
@@ -163,9 +163,9 @@ def build() -> Path:
     rk.kpi_strip(doc, [(str(meta["rows"]), "rows published", NAVY), (str(counts["NYSE"]), "NYSE, 2026–2028", TEAL),
                        ("0", "NYSE vs NASDAQ 2026 differences", GREEN), (meta["level"], "overall validation", AMBER),
                        ("0", "CME rows (by design)", CORAL)])
-    rk.figure(doc, rows_png, "Rows per exchange in the live run. CME is empty on purpose — see section 5.4.")
+    rk.figure(doc, rows_png, "Rows per exchange in the live run. CME is empty on purpose (see section 5.4).")
     rk.para(doc,
-            "The result is WARN rather than PASS, and that is the honest outcome. The equity calendars pass every "
+            "The result is WARN rather than PASS, and that is the right outcome. The equity calendars pass every "
             "check and agree with each other date for date. The warnings are the three things I could not "
             "legitimately fetch: CME (its terms forbid scraping), and OPRA having only a 2025 schedule online, so it "
             "shares no year with NYSE or NASDAQ for a cross-check.")
@@ -174,7 +174,7 @@ def build() -> Path:
     doc.add_heading("2. The files on Google Drive", level=1)
     rk.para(doc,
             "These four CSVs are the deliverable. The uploader finds each file by name and overwrites it, so a weekly "
-            "run never creates duplicates — which is why the names must not change.")
+            "run never creates duplicates. That is why the names must not change.")
     sizes = {p.name: p.stat().st_size for p in OUTDIR.glob("trading_holidays_*.csv")}
     rk.table(doc, ["File", "Contents", "Rows", "Size"], [
         ["trading_holidays_combined.csv", "Every exchange in one table", str(meta["rows"]), f"{sizes.get('trading_holidays_combined.csv', 0):,} B"],
@@ -199,7 +199,6 @@ def build() -> Path:
     ], widths_cm=[6.0, 10.6])
 
     # ---------------------------------------------------------------- 3
-    rk.page_break(doc)
     doc.add_heading("3. How the scraper works", level=1)
     rk.figure(doc, pipe, "The six stages of a run.")
     rk.para(doc,
@@ -207,7 +206,7 @@ def build() -> Path:
             "slow adapter cannot make one file look like two runs), calls the adapters in order, normalises the rows, "
             "validates them, writes the files and, if asked, uploads. The steps below follow that order.")
 
-    doc.add_heading("Step 1 — Reconnaissance before any parser", level=2)
+    doc.add_heading("Step 1: Reconnaissance before any parser", level=2)
     rk.para(doc,
             "Each candidate source was opened once and saved under raw/_recon_2026-10-16/ before I trusted it. Two of "
             "the five obvious URLs turned out to be the wrong choice, which is exactly why this step exists.")
@@ -219,23 +218,23 @@ def build() -> Path:
         ["cmegroup.com", "HTTP 403 even for robots.txt; Data Terms of Use prohibit scripts", "Do not scrape; read operator files"],
     ], widths_cm=[3.8, 8.2, 4.6])
 
-    doc.add_heading("Step 2 — Fetch politely, keep everything", level=2)
+    doc.add_heading("Step 2: Fetch politely, keep everything", level=2)
     rk.para(doc,
             "All adapters share one fetch method. It sends normal browser headers (to identify the client, not to "
             "evade anything), saves every 200 response under raw/<exchange>/<run>/, and treats status codes "
             "differently on purpose:")
     rk.bullets(doc, [
-        ("401, 403, 404:", "saved with an .httpNNN suffix and raised immediately — never retried. A site that has said no is not asked again."),
+        ("401, 403, 404:", "saved with an .httpNNN suffix and raised immediately and never retried. A site that has said no is not asked again."),
         ("429 and 5xx:", "wait for Retry-After if given, otherwise 2^attempt plus jitter, then retry."),
         ("Network errors:", "retried the same way, except for NASDAQ, where a connection reset means 'this client is refused'; it gets two quick tries and moves to the next source."),
     ])
 
-    doc.add_heading("Step 3 — Parse each exchange", level=2)
+    doc.add_heading("Step 3: Parse each exchange", level=2)
     doc.add_heading("NYSE", level=3)
     rk.para(doc,
             "The page has one table: holiday names down the side and one column per year. A cell with a date becomes a "
             "closed row for that year; a cell with a dash means 'not observed' and produces a note, not an invented "
-            "date — New Year's Day 2028 falls on a Saturday and NYSE publishes a dash, so there is no row. Early closes "
+            "date: New Year's Day 2028 falls on a Saturday and NYSE publishes a dash, so there is no row. Early closes "
             "are not in the table at all; they live in the footnotes ('…will close early at 1:00 p.m. on…'). The "
             "adapter keeps the footnote text, finds the time and the weekday dates in it, and turns each into an "
             f"early_close row. Live result: {int(((df.exchange=='NYSE')&(df.status=='closed')).sum())} closes and "
@@ -244,7 +243,7 @@ def build() -> Path:
     rk.para(doc,
             "nasdaqtrader.com is tried first, with short timeouts. Its table is 'year | Holiday | Status'; a status "
             "containing a time is an early close at that local time. If it fails, headless Chromium opens the public "
-            "nasdaq.com page and the rendered HTML is parsed instead — no stealth plugins, no proxies. If both fail, "
+            "nasdaq.com page and the rendered HTML is parsed instead. No stealth plugins, no proxies. If both fail, "
             "NASDAQ ships zero rows with a SOURCE_UNAVAILABLE note and the other exchanges still publish. Live result: "
             "nasdaqtrader.com answered with 12 rows; the Playwright fallback is tested on a saved page but was not "
             "needed live.")
@@ -255,23 +254,23 @@ def build() -> Path:
             "with pdfplumber: 'HOLIDAY NAME  Month D' lines are closes, and the asterisked footnote lists the 13:00 ET "
             "early closes. On 16 October only the 2025 PDF was linked (the 2026 URL returned 403), so OPRA ships 14 "
             "rows from 2025, including 1 January 2026 printed on the 2025 notice.")
-    doc.add_heading("CME — the step that deliberately does not fetch", level=3)
+    doc.add_heading("CME: the step that deliberately does not fetch", level=3)
     rk.para(doc,
             "There is no single CME holiday calendar: equity index, rates, energy and agriculture differ, and Globex "
             "differs from ClearPort. The adapter is scoped to Globex US equity index products (ES, NQ, YM, RTY) and "
-            "reads only files an operator has downloaded into input/cme/ — a CSV in a documented format or the "
+            "reads only files an operator has downloaded into input/cme/: a CSV in a documented format or the "
             "per-holiday PDFs. The folder was empty, so CME returned zero rows with a MANUAL_INPUT_REQUIRED note. "
             "Scraping a site whose terms forbid it is not a trade-off I would make for a client-facing job.")
 
-    doc.add_heading("Step 4 — Normalise", level=2)
+    doc.add_heading("Step 4: Normalise", level=2)
     rk.bullets(doc, [
         "Clean names (collapse whitespace, strip footnote marks) and map them to canonical names, so 'JUNTEENTH' in the OPRA PDF still matches 'Juneteenth' elsewhere.",
         "Convert early-close times to UTC using the exchange's IANA time zone: 13:00 New York on 24 December 2026 becomes 18:00Z (EST), on 3 July 2028 it becomes 17:00Z (EDT).",
-        "Sort and drop duplicate (exchange, date, status) keys — none on this run.",
+        "Sort and drop duplicate (exchange, date, status) keys. There were none on this run.",
         "Trust the published date. An observed-date helper exists and is tested, but it is never used to invent a date the source did not print.",
     ])
 
-    doc.add_heading("Step 5 — Validate, without auto-correcting", level=2)
+    doc.add_heading("Step 5: Validate, without auto-correcting", level=2)
     rk.para(doc,
             "Validation walks the table once and grades every check PASS, WARN or FAIL. The overall result is the worst "
             "grade. Differences between exchanges are reported, never edited away.")
@@ -286,16 +285,15 @@ def build() -> Path:
             bold_lead="New check.")
     rk.table(doc, ["Check", "Result", "Detail"], early_close_counts(df), widths_cm=[4.4, 1.8, 10.4], status_col=1, font_size=9)
 
-    doc.add_heading("Step 6 — Write the files and exit with a meaningful code", level=2)
+    doc.add_heading("Step 6: Write the files and exit with a meaningful code", level=2)
     rk.para(doc,
             "The combined CSV and one CSV per exchange that returned rows are written (CME has no file because it has "
             "no rows), plus validation_report.md, validation_checks.json and run_meta.json. Before overwriting, the "
             "previous combined file is copied aside so the next run can diff against it; a change of more than 30 % "
-            "of rows is a FAIL. Exit code 0 means PASS or WARN, 1 means validation FAIL, 2 means an adapter crashed — "
+            "of rows is a FAIL. Exit code 0 means PASS or WARN, 1 means validation FAIL, 2 means an adapter crashed, "
             "and the automation treats those differently.")
 
     # ---------------------------------------------------------------- 4
-    rk.page_break(doc)
     doc.add_heading("4. Automation on GitHub", level=1)
     rk.para(doc,
             "The workflow lives at .github/workflows/trading-holidays.yml in the repository root, the only place GitHub "
@@ -303,7 +301,7 @@ def build() -> Path:
     rk.numbered(doc, [
         ("Triggers.", "Every Monday at 06:17 UTC, plus a manual run with an exchange list and an upload switch."),
         ("Setup.", "Python 3.12, requirements.txt and Playwright's Chromium for the NASDAQ fallback."),
-        ("Tests first.", "python -m pytest tests -q — 11 tests on saved fixtures, no network."),
+        ("Tests first.", "python -m pytest tests -q runs 11 tests on saved fixtures, no network."),
         ("Run with retries that make sense.", "Up to three attempts with backoff for a crash (exit 2); a validation FAIL (exit 1) stops immediately because retrying will not fix a bad calendar."),
         ("Report.", "The validation report goes into the run summary; output/ and raw/ are kept as a 90-day artifact."),
         ("Publish.", "With the Drive secrets set the files are uploaded; without them the job runs in DRY_RUN. The refreshed CSVs are committed back to the repository, skipping missing files and empty commits."),

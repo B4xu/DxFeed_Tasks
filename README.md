@@ -2,10 +2,10 @@
 
 | Task | Folder | Main deliverable |
 |---|---|---|
-| A — trading-holiday scraper | [`deliverables/taskA_holidays/`](deliverables/taskA_holidays/) | `TaskA_Holiday_Scraper_Report.docx`, CSVs in `output/` |
-| B — on-call incident | [`deliverables/taskB_incident/`](deliverables/taskB_incident/) | `TaskB_Incident_Report.docx`, `answer.md` |
-| C — demo feed assessment | [`deliverables/taskC_assessment/`](deliverables/taskC_assessment/) | `TaskC_Assessment_Report.docx`, `report.md`, `evidence/` |
-| C — live presentation | [`deliverables/taskC_presentation_pack/`](deliverables/taskC_presentation_pack/) | `TaskC_Live_Presentation.pptx`, `SPEAKER_SCRIPT.md` |
+| A — trading-holiday scraper | [`deliverables/taskA_holidays/`](deliverables/taskA_holidays/) | `TaskA_Holiday_Scraper_Report.docx` / `.pdf`, CSVs in `output/` |
+| B — on-call incident | [`deliverables/taskB_incident/`](deliverables/taskB_incident/) | `TaskB_Incident_Report.docx` / `.pdf`, `answer.md` |
+| C — demo feed assessment | [`deliverables/taskC_assessment/`](deliverables/taskC_assessment/) | `TaskC_Assessment_Report.docx` / `.pdf`, `report.md`, `evidence/` |
+| C — live presentation | [`deliverables/taskC_presentation_pack/`](deliverables/taskC_presentation_pack/) | `TaskC_Live_Presentation.pptx` / `.pdf` (26 slides), `SPEAKER_SCRIPT.md` |
 
 Cross-task notes: `deliverables/executive_summary.md`, `deliverables/audit_status.md`,
 `deliverables/worklog.md`.
@@ -23,6 +23,9 @@ pip install pandas numpy matplotlib aiohttp requests python-docx python-pptx
 ```bash
 python deliverables/build_all.py
 ```
+
+The last step exports the reports and the deck to PDF with LibreOffice (`soffice` on PATH, or
+`flatpak install --user flathub org.libreoffice.LibreOffice`). Without LibreOffice it is skipped.
 
 ## Automation
 

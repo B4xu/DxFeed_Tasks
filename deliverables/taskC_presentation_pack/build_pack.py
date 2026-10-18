@@ -72,7 +72,7 @@ def build_speaker_script(script_parts, n_slides):
         "# Speaker script — Task C 45-minute live presentation",
         "",
         f"**Slides:** {n_slides} · **Target:** 45 minutes  ",
-        "**Pacing:** ~5 min context · 15 min data · 8 min load · 7 min risk/incident · 5 min improvements · 5 min Q&A",
+        "**Pacing:** ~3 min context · 3 min Task A · 15 min data · 9 min load · 10 min risk/incident/improvements · 5 min Q&A",
         "",
         "## Global rules while speaking",
         "- Lead with method and validation, then findings.",
@@ -133,10 +133,9 @@ def build_speaker_script(script_parts, n_slides):
 
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
-    from visual_deck import build_visual_pptx, make_summary_charts
+    from deck import build as build_deck
 
-    charts = make_summary_charts()
-    pptx_path, parts, n = build_visual_pptx(charts)
+    pptx_path, parts, n = build_deck()
     print("  ->", pptx_path, "slides=", n)
     print("  ->", build_supporting_materials())
     print("  ->", build_speaker_script(parts, n))

@@ -1,7 +1,7 @@
 # Speaker script — Task C 45-minute live presentation
 
-**Slides:** 28 · **Target:** 45 minutes  
-**Pacing:** ~5 min context · 15 min data · 8 min load · 7 min risk/incident · 5 min improvements · 5 min Q&A
+**Slides:** 26 · **Target:** 45 minutes  
+**Pacing:** ~3 min context · 3 min Task A · 15 min data · 9 min load · 10 min risk/incident/improvements · 5 min Q&A
 
 ## Global rules while speaking
 - Lead with method and validation, then findings.
@@ -13,169 +13,157 @@
 
 ## Slide 1 — Title
 
-OPENING (about 45 seconds). This deck is the evidence from Friday 16 October 2026. Green means I measured it. Amber means I have a pattern and a hypothesis, not a root cause. Coral means the work was not done, and I will say why. Pass 2 is still waiting for Monday 19 October after 15:30 UTC.
+Hi, I'm Irakli. For Task C I treated the demo feed the way I would treat a client saying 'your data looks wrong'. I pulled enough history to test it properly, rebuilt the bigger candles from the smaller ones, compared everything, and then put some polite load on it. All of this was on Friday 16 October. Everything I show today can be recomputed from the saved files without touching the demo again.
 
 ---
 
-## Slide 2 — At a glance
+## Slide 2 — Agenda
 
-One slide of numbers before any detail. Read them left to right; each one has its own slide later. Latencies everywhere in this deck are seconds, not milliseconds.
-
----
-
-## Slide 3 — Done, partial, and not done
-
-Spend two minutes here. Interviewers will ask what you did not verify. Answer from the coral column before they ask. Do not upgrade amber items to conclusions.
+Four parts. Most of the time goes to data consistency, because that is where the interesting problems are. Every slide has a tag in the corner: verified means I reproduced it from the saved data, hypothesis means it fits but I could not prove it, not done means exactly that.
 
 ---
 
-## Slide 4 — Section: Task A
+## Slide 3 — The short version
 
-Thirty seconds. The calendar is the input to the gap analysis in Task C.
-
----
-
-## Slide 5 — Task A chart
-
-Task A in one minute. 60 data rows. NYSE matched NASDAQ on every 2026 date. CME is empty because scraping is forbidden.
+If you remember one slide, this is it. The feed is delayed by exactly fifteen minutes. History silently stops at about eight thousand candles. Hourly volume for US stocks doesn't match the five-minute candles outside regular hours. FX prints a few candles when the market is closed. And under load the service queues instead of saying slow down. All latencies today are in seconds, not milliseconds.
 
 ---
 
-## Slide 6 — Section: data consistency
+## Slide 4 — How I worked
 
-Fifteen minutes for this section. Lead with what works, then the silent defects.
-
----
-
-## Slide 7 — 15-minute delay
-
-Quote age sits on 900 seconds for every symbol. Fresh means fifteen minutes old.
+This is the pipeline. I pulled history in chunks, validated each series, rebuilt the bigger timeframes from the smaller ones, cross-checked against the stream and Radar, then ran the load test. At the end I re-ran every headline number offline, and that re-check corrected four of my own earlier claims. I'll point them out when we get there. Crypto was in the brief, but every crypto symbol timed out on the demo, so TSLA is my high-volatility instrument.
 
 ---
 
-## Slide 8 — Price integrity
+## Slide 5 — Section: Task A: holiday calendar
 
-Lead with what works: 58,315 candles, 0 misaligned, holidays match. Then say OHLC is not 100% clean.
-
----
-
-## Slide 9 — OHLC mismatches
-
-Six candles, three complete, all under 0.03 percent. Earlier claim of perfect agreement withdrawn.
+Task A: holiday calendar. About 3 minutes. The calendar Task C uses to tell a holiday from a gap
 
 ---
 
-## Slide 10 — Volume split summary
+## Slide 6 — NYSE and NASDAQ agree on every 2026 date
 
-AAPL 130 ETH plus 1 RTH. TSLA 118 ETH plus 2 RTH. Cause not proven.
-
----
-
-## Slide 11 — AAPL heatmap
-
-Red outside regular hours, white inside, one blue exception.
+I built a small scraper with one adapter per exchange. It writes one CSV per exchange plus a combined file, and validates them. NYSE and NASDAQ match on every closed day and early close in 2026. The overall result is WARN, not FAIL. CME is a deliberate gap: its site terms forbid scraping, so the adapter only reads files dropped in by hand. OPRA has only published the 2025 PDF; the 2026 one returned 403. I uploaded the CSVs to Drive myself. The automated Drive upload is written but has not run with real credentials.
 
 ---
 
-## Slide 12 — AAPL volume chart
+## Slide 7 — Section: Data consistency
 
-Blue dots below zero are extended-hours volume gaps. One regular-hours hour goes the other way.
-
----
-
-## Slide 13 — TSLA volume chart
-
-Same extended-hours pattern. Two regular-hours exceptions. TimeAndSale blocked.
+Data consistency. About 15 minutes. What is right, and the problems that do not raise an error
 
 ---
 
-## Slide 14 — Volume reconciliation
+## Slide 8 — What is right: the basics are clean
 
-Hourly is closer to daily on the one day we have. No workaround is offered.
-
----
-
-## Slide 15 — EURUSD weekend
-
-50 outside-session minutes (not 214). Not proven to be trades.
+I want to say what works before the problems. Across all twelve series there are no misaligned timestamps, nothing out of order, no NaN prices. Equities are empty on every NYSE holiday, matching Task A, and EUR/USD trades through them, which is correct. The 21 duplicates come from toTime being inclusive, and they carry identical values, so dropping them is safe.
 
 ---
 
-## Slide 16 — Silent 8000
+## Slide 9 — Every quote is exactly 15 minutes old
 
-Live demo: request 14 days of AAPL 1-minute candles, or open chunks.jsonl. Count 8000. Show the empty older window. Do not claim this is a production bug.
-
----
-
-## Slide 17 — Candle totals
-
-Identical 8,000 ceiling across four very different instruments: a server limit, silent.
+Quote age sits on nine hundred seconds for every symbol, on every surface. That's fine for a demo, but nothing in the response says it is delayed. A client who builds a 'data is stale' alert from zero will page all day. I'd want the delay in the payload.
 
 ---
 
-## Slide 18 — Section: load
+## Slide 10 — History stops at 8,000 candles and still says OK
 
-Eight minutes. Every latency is seconds.
-
----
-
-## Slide 19 — Load p50 chart
-
-Throughput flat (~1.6 pre, ~3.2 market). Pool could not bind; second client not run. No 429.
+This is the one I'd escalate first. I asked for two weeks of one-minute AAPL and got the newest eight thousand, with status OK. The decisive test was a window completely before that edge: OK again, empty body. It may well be an intentional demo quota, and that's fine. The problem is the silence. A truncated flag, or one sentence in the docs, fixes it. I can show this live with chunks.jsonl.
 
 ---
 
-## Slide 20 — Throughput
+## Slide 11 — Hourly volume breaks outside regular hours
 
-Flat at about 1.6 and 3 requests per second. The 4.6 figure was a measurement artefact.
-
----
-
-## Slide 21 — Latency by type
-
-Quotes stay fast, candles queue. TIMED_OUT stretches to 29 seconds.
+This is the most interesting finding. Each cell is one hour; red means the served hourly bar has more volume than its five-minute bars add up to. The boxed regular-hours block is white, and outside it the difference goes up to 99 percent. There is one blue cell inside regular hours, 8 October 11:00 ET, plus 2 percent the other way. TSLA has two exceptions on the same day and hours, which points to a market-wide event, not an AAPL thing. Re-fetching 11 minutes later gave the same values. The test that would explain it needs TimeAndSale, and that timed out on the demo. So: real pattern, cause open.
 
 ---
 
-## Slide 22 — Latency plots
+## Slide 12 — Which volume is right? Not decided yet
 
-Point at p95, not the error rate. The error rate stayed zero while the experience died.
-
----
-
-## Slide 23 — Radar
-
-OHL matches. 2038 NaN candles are a client footgun. NVDA is a different symbol list.
+This slide changed my advice. My first draft said 'build extended-hours analytics from one-minute data'. The data doesn't support that: on the only day with a daily candle, the hourly sum is slightly closer. One data point, so I don't pick a winner. tho=true might be a workaround but I never tested it.
 
 ---
 
-## Slide 24 — Open items
+## Slide 13 — Prices are almost, not perfectly, consistent
 
-If asked 'what did you not verify', read this slide. Pass 2 and the logger analysis are the only ones that are simply waiting on the clock.
-
----
-
-## Slide 25 — Section: risk and incident
-
-Twelve minutes for risk, incident and improvements together.
+I'm correcting myself here. An earlier draft said prices always agree. They nearly do. Three of the six differences are the bar that was still forming, which is expected. Three are complete hours, and two of those are TSLA on 8 October, the same block as the volume exception. Small, but I'd rather say it.
 
 ---
 
-## Slide 26 — Risks and incident
+## Slide 14 — EUR/USD prints 50 candles while FX is closed
 
-Seven minutes for risk and the incident. The external email must not assert a root cause.
-
----
-
-## Slide 27 — Improvements
-
-Five minutes. Lead with the response envelope because it fixes the silent cap.
+FX trades Sunday 17:00 to Friday 17:00 New York time. My first count used the UTC weekday and got 214, but 170 of those are just the Sunday reopen. Against the real session it's 50. They might be indicative quotes or a heartbeat; I set up a weekend logger to tell them apart, but it stopped on Saturday, so that stays open. The client risk is session logic: 'last candle is fresh' would call FX open on Sunday morning.
 
 ---
 
-## Slide 28 — Questions
+## Slide 15 — Edge cases
 
-Q&A. If they ask whether the 8000 cap is just a quota: yes, possibly, and the defect is still the missing signal. If they ask about production RPS: the monitoring design transfers, the numbers do not.
+These are the small ones. None of them throws an error, which is exactly why they turn into tickets. My favourite is the 2038 date: if you open the stream inside the delay window you get NaN candles dated 2038. A parser that ignores the flags stores them. Radar versus REST is just different symbol lists, but support will hear 'it works in Radar' a lot.
+
+---
+
+## Slide 16 — Section: Behaviour under load
+
+Behaviour under load. About 9 minutes. What happens when one client adds parallel requests
+
+---
+
+## Slide 17 — More workers did not buy more throughput
+
+Market-hours run. Left: throughput measured through completion. It jumps from one to five workers and then stays flat around three requests a second, and drops a little at fifty. Right: latency. Median goes from half a second to eight seconds, p95 to twenty-six. I want to be careful about two things. An earlier version said throughput rose to 4.6; that number ignored requests still in flight, and it's wrong. And these are seconds. Zero errors, no 429, no Retry-After: the service queues, it never tells the client to back off.
+
+---
+
+## Slide 18 — Latency by request type
+
+Queueing isn't uniform. Quotes stay fairly quick while both candle requests wait eleven or twelve seconds. That fits per-request cost or separate queues, not one simple line. On the right, the timeout for an unknown symbol: three seconds alone, twenty-nine under load, because queue time is added before the server's own timeout starts. A dashboard mixing quotes and candles will look half alive.
+
+---
+
+## Slide 19 — Bottleneck
+
+The first question I asked myself was whether I was the bottleneck. Little's law says no: at five and ten workers the average in flight equals the setting, so they were all waiting on the server. The pool allowed 52 connections and I never ran more than 50. What I can't say is whether the cap is per IP or shared with other demo users. That needs a second client at the same time, and I didn't run it. If anyone asks for a production number: I won't extrapolate one from a free demo.
+
+---
+
+## Slide 20 — Section: Risk, incident and improvements
+
+Risk, incident and improvements. About 10 minutes. What I would escalate, how I'd run the incident, what I'd fix
+
+---
+
+## Slide 21 — Risks
+
+I ranked risks by how often I actually saw them and how much damage they do if nobody notices. Silent ones go to the top: the 8,000 cap, the volume difference, and staleness that looks like a closed market. Queueing without a 429 is next. The FX prints are real but low impact if clients use a proper session calendar.
+
+---
+
+## Slide 22 — Incident drill
+
+The scenario is invented, the numbers are real. A quant client's nightly reconciliation flags the 18:00 hour. In the first fifteen minutes I reproduce it from public endpoints, count how many hours are affected, check five-minute against one-minute, and escalate with the CSV and one clear question. The client message gives facts and a next-update time. It doesn't guess a cause and it doesn't offer tho=true, because I never tested it.
+
+---
+
+## Slide 23 — Improvements
+
+Three proposals. The technical one matters most, because a truncated flag fixes the silent cap with an additive JSON field. Monitoring: the scripts I wrote are most of a probe already; what's missing is wiring and a session calendar. Documentation is the cheapest: one page, and my report is the draft.
+
+---
+
+## Slide 24 — Corrections
+
+I'd rather show you this than have you find it. Each of these was in an earlier draft. The offline re-check caught all four, and every slide today uses the corrected numbers.
+
+---
+
+## Slide 25 — Open items
+
+If you ask what I didn't verify, this is the answer. Pass 2 and the logger are only waiting on the clock. The volume cause is blocked because the demo doesn't serve TimeAndSale history. The rest I simply didn't run, and I'm not going to present them as results.
+
+---
+
+## Slide 26 — Questions
+
+That's it from me. If you ask whether the 8,000 cap is just a quota: possibly, and the missing signal is still the defect. If you ask about production capacity: the monitoring design transfers, the numbers don't.
 
 ---
 
