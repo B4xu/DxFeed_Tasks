@@ -1,0 +1,8 @@
+{"ts": "2026-10-16T11:43:15.786Z", "http": 200, "latency_s": 1.181, "dx_status": "OK", "quotes": {"AAPL": {"bidTime": 1792150065000, "bid": 343.05, "ask": 343.27, "age_s": 930.8}}, "candles": {}}
+{"ts": "2026-10-16T11:43:19.770Z", "http": 200, "latency_s": 0.165, "dx_status": "OK", "quotes": {"AAPL": {"bidTime": 1792150065000, "bid": 343.05, "ask": 343.27, "age_s": 934.8}}, "candles": {}}
+{"ts": "2026-10-16T11:43:24.784Z", "http": 200, "latency_s": 0.179, "dx_status": "OK", "quotes": {"AAPL": {"bidTime": 1792150103000, "bid": 343.05, "ask": 343.26, "age_s": 901.8}}, "candles": {}}
+{"ts": "2026-10-16T11:43:29.767Z", "http": 200, "latency_s": 0.162, "dx_status": "OK", "quotes": {"AAPL": {"bidTime": 1792150103000, "bid": 343.05, "ask": 343.26, "age_s": 906.8}}, "candles": {}}
+{"ts": "2026-10-16T11:43:34.773Z", "http": 200, "latency_s": 0.167, "dx_status": "OK", "quotes": {"AAPL": {"bidTime": 1792150111000, "bid": 343.05, "ask": 343.2, "age_s": 903.8}}, "candles": {}}
+{"ts": "2026-10-16T11:43:39.771Z", "http": 200, "latency_s": 0.165, "dx_status": "OK", "quotes": {"AAPL": {"bidTime": 1792150111000, "bid": 343.05, "ask": 343.2, "age_s": 908.8}}, "candles": {}}
+{"ts": "2026-10-16T11:43:44.767Z", "http": 200, "latency_s": 0.161, "dx_status": "OK", "quotes": {"AAPL": {"bidTime": 1792150111000, "bid": 343.05, "ask": 343.2, "age_s": 913.8}}, "candles": {}}
+{"ts": "2026-10-16T11:43:49.770Z", "http": 200, "latency_s": 0.164, "dx_status": "OK", "quotes": {"AAPL": {"bidTime": 1792150111000, "bid": 343.05, "ask": 343.2, "age_s": 918.8}}, "candles": {}}

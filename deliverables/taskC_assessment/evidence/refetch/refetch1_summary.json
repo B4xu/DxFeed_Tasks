@@ -1,0 +1,39 @@
+{
+  "refetch1_at": "2026-10-16T13:46:09.860Z",
+  "hour": "2026-10-08T15:00:00.000Z",
+  "pass1": {
+    "AAPL": {
+      "volume": 2148473.897334,
+      "count": 106811
+    },
+    "TSLA": {
+      "volume": 2053134.288527,
+      "count": 117527
+    }
+  },
+  "refetch1": {
+    "AAPL": {
+      "volume": 2148473.897334,
+      "count": 106811,
+      "open": 337.8,
+      "high": 338.34,
+      "low": 337.17,
+      "close": 338.13,
+      "delta_volume_vs_pass1": 0.0,
+      "delta_count_vs_pass1": 0,
+      "identical_to_pass1_ohlcv_count": true
+    },
+    "TSLA": {
+      "volume": 2053134.288527,
+      "count": 117527,
+      "open": 373.0302,
+      "high": 373.37,
+      "low": 371.69,
+      "close": 371.9033,
+      "delta_volume_vs_pass1": 0.0,
+      "delta_count_vs_pass1": 0,
+      "identical_to_pass1_ohlcv_count": true
+    }
+  },
+  "note": "Candle time field is epoch ms 1791471600000 (= 2026-10-08T15:00:00Z)."
+}

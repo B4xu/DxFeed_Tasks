@@ -1,0 +1,42 @@
+[
+  {
+    "name": "trading_holidays_combined.csv",
+    "bytes": 16229,
+    "mime": "text/csv",
+    "convert_to": null,
+    "action": "DRY_RUN",
+    "id": null
+  },
+  {
+    "name": "trading_holidays_NASDAQ.csv",
+    "bytes": 2864,
+    "mime": "text/csv",
+    "convert_to": null,
+    "action": "DRY_RUN",
+    "id": null
+  },
+  {
+    "name": "trading_holidays_NYSE.csv",
+    "bytes": 9092,
+    "mime": "text/csv",
+    "convert_to": null,
+    "action": "DRY_RUN",
+    "id": null
+  },
+  {
+    "name": "trading_holidays_OPRA.csv",
+    "bytes": 4579,
+    "mime": "text/csv",
+    "convert_to": null,
+    "action": "DRY_RUN",
+    "id": null
+  },
+  {
+    "name": "trading_holidays",
+    "bytes": 16112,
+    "mime": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "convert_to": "application/vnd.google-apps.spreadsheet",
+    "action": "DRY_RUN",
+    "id": null
+  }
+]

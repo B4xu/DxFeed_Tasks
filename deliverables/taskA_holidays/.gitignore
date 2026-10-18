@@ -1,0 +1,7 @@
+# never commit credentials or operator-downloaded CME files
+*.json.key
+service_account*.json
+input/cme/*
+!input/cme/README.md
+__pycache__/
+.pytest_cache/

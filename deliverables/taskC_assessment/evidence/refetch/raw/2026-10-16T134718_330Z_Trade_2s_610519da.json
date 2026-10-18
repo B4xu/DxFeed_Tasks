@@ -1,0 +1,1 @@
+{"status":"OK","Trade":{"AAPL":{"eventSymbol":"AAPL","eventTime":0,"time":1792157538946,"timeNanoPart":0,"sequence":114327,"exchangeCode":"D","price":347.2691,"change":5.2691,"size":432,"dayId":20742,"dayVolume":8657881.336326,"dayTurnover":2.9994547404595766E9,"tickDirection":"ZERO_DOWN","extendedTradingHours":false}}}

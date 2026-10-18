@@ -1,0 +1,97 @@
+[
+  {
+    "name": "NYSE.rows",
+    "level": "PASS",
+    "detail": "NYSE returned 34 rows"
+  },
+  {
+    "name": "NASDAQ.rows",
+    "level": "PASS",
+    "detail": "NASDAQ returned 12 rows"
+  },
+  {
+    "name": "OPRA.rows",
+    "level": "PASS",
+    "detail": "OPRA returned 14 rows"
+  },
+  {
+    "name": "CME.rows",
+    "level": "WARN",
+    "detail": "CME returned 0 rows (manual input required, see notes)"
+  },
+  {
+    "name": "weekday",
+    "level": "PASS",
+    "detail": "0 weekend-dated rows"
+  },
+  {
+    "name": "duplicates",
+    "level": "PASS",
+    "detail": "0 duplicate (exchange,date,status) rows"
+  },
+  {
+    "name": "NASDAQ.2026.closures",
+    "level": "PASS",
+    "detail": "10 full-day closures (plausible 8-11)"
+  },
+  {
+    "name": "NYSE.2026.closures",
+    "level": "PASS",
+    "detail": "10 full-day closures (plausible 8-11)"
+  },
+  {
+    "name": "NYSE.2027.closures",
+    "level": "PASS",
+    "detail": "10 full-day closures (plausible 8-11)"
+  },
+  {
+    "name": "NYSE.2028.closures",
+    "level": "PASS",
+    "detail": "9 full-day closures (plausible 8-11)"
+  },
+  {
+    "name": "OPRA.2025.closures",
+    "level": "PASS",
+    "detail": "10 full-day closures (plausible 8-11)"
+  },
+  {
+    "name": "OPRA.2026.closures",
+    "level": "PASS",
+    "detail": "1 closure(s) spilling from source_year 2025"
+  },
+  {
+    "name": "early_close_time",
+    "level": "PASS",
+    "detail": "0 early-close rows without a close time"
+  },
+  {
+    "name": "NYSE_vs_NASDAQ.closed",
+    "level": "PASS",
+    "detail": "years [2026]: 0 differing dates"
+  },
+  {
+    "name": "NYSE_vs_NASDAQ.early_close",
+    "level": "PASS",
+    "detail": "years [2026]: 0 differing dates"
+  },
+  {
+    "name": "NYSE_vs_OPRA",
+    "level": "WARN",
+    "detail": "no overlapping source years ([2026, 2027, 2028] vs [2025]); comparison skipped"
+  },
+  {
+    "name": "NASDAQ_vs_OPRA",
+    "level": "WARN",
+    "detail": "no overlapping source years ([2026] vs [2025]); comparison skipped"
+  },
+  {
+    "name": "good_friday",
+    "level": "PASS",
+    "detail": "5 Good Friday rows checked against Easter-2"
+  },
+  {
+    "name": "diff_previous",
+    "level": "PASS",
+    "detail": "rows 60 -> 60 (0.0% change, threshold 30.0%); added 0: []; removed 0: []"
+  }
+]

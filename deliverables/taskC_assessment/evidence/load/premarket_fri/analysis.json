@@ -1,0 +1,422 @@
+{
+  "run": "premarket_fri",
+  "meta": {
+    "run": "premarket_fri",
+    "started_at": "2026-10-16T11:52:56.667Z",
+    "steps": "1,5,10,25,50",
+    "step_seconds": 30.0,
+    "pause_seconds": 10.0,
+    "think_seconds": 0.25,
+    "budget": 3500,
+    "endpoint": "https://demo.dxfeed.com/webservice/rest/events.json",
+    "symbols_quote": [
+      "AAPL",
+      "TSLA",
+      "SPY",
+      "MSFT",
+      "IBM",
+      "GOOG",
+      "AMZN",
+      "DIA",
+      "EUR/USD",
+      "GBP/USD",
+      "USD/JPY",
+      "AUD/USD",
+      "/ESZ26:XCME"
+    ],
+    "fixed_window": [
+      "2026-10-15T14:00:00Z",
+      "2026-10-15T15:00:00Z"
+    ],
+    "finished_at": "2026-10-16T11:55:23.951Z",
+    "total_requests": 144,
+    "stop_reason": "p50 latency 8.3s at step 3"
+  },
+  "n": 144,
+  "per_step": [
+    {
+      "step": 0,
+      "concurrency": 1,
+      "n": 6,
+      "errors": 0,
+      "error_pct": 0.0,
+      "http_codes": {
+        "200": 6
+      },
+      "dx_status": {
+        "OK": 6
+      },
+      "p50": 0.756,
+      "p95": 20.005,
+      "p99": 25.015,
+      "max": 26.267,
+      "mean": 4.922,
+      "duration_s": 29.6,
+      "rps": 0.19,
+      "rps_start_to_start_overstated": 0.2,
+      "by_kind": {
+        "candle_fixed": {
+          "n": 2,
+          "p50": 1.106,
+          "p95": 1.209,
+          "err": 0,
+          "bytes_min": 20013,
+          "bytes_max": 20085,
+          "age_p50": 75206.2,
+          "age_max": 75207.5,
+          "empty": 0
+        },
+        "candle_fresh": {
+          "n": 2,
+          "p50": 0.446,
+          "p95": 0.515,
+          "err": 0,
+          "bytes_min": 919,
+          "bytes_max": 14593,
+          "age_p50": 1614.8,
+          "age_max": 2306.0,
+          "empty": 0
+        },
+        "quote": {
+          "n": 2,
+          "p50": 13.213,
+          "p95": 24.962,
+          "err": 0,
+          "bytes_min": 251,
+          "bytes_max": 252,
+          "age_p50": 932.1,
+          "age_max": 937.4,
+          "empty": 0
+        }
+      }
+    },
+    {
+      "step": 1,
+      "concurrency": 5,
+      "n": 55,
+      "errors": 0,
+      "error_pct": 0.0,
+      "http_codes": {
+        "200": 55
+      },
+      "dx_status": {
+        "OK": 53,
+        "TIMED_OUT": 2
+      },
+      "p50": 2.684,
+      "p95": 3.14,
+      "p99": 5.753,
+      "max": 5.754,
+      "mean": 2.693,
+      "duration_s": 29.8,
+      "rps": 1.63,
+      "rps_start_to_start_overstated": 1.84,
+      "by_kind": {
+        "candle_fixed": {
+          "n": 16,
+          "p50": 2.727,
+          "p95": 3.034,
+          "err": 0,
+          "bytes_min": 20013,
+          "bytes_max": 20085,
+          "age_p50": 75235.2,
+          "age_max": 75248.3,
+          "empty": 0
+        },
+        "candle_fresh": {
+          "n": 19,
+          "p50": 2.959,
+          "p95": 5.753,
+          "err": 0,
+          "bytes_min": 22,
+          "bytes_max": 14728,
+          "age_p50": 952.0,
+          "age_max": 2327.5,
+          "empty": 2
+        },
+        "quote": {
+          "n": 20,
+          "p50": 2.465,
+          "p95": 2.598,
+          "err": 0,
+          "bytes_min": 250,
+          "bytes_max": 265,
+          "age_p50": 901.3,
+          "age_max": 956.5,
+          "empty": 0
+        }
+      }
+    },
+    {
+      "step": 2,
+      "concurrency": 10,
+      "n": 55,
+      "errors": 0,
+      "error_pct": 0.0,
+      "http_codes": {
+        "200": 55
+      },
+      "dx_status": {
+        "OK": 54,
+        "TIMED_OUT": 1
+      },
+      "p50": 6.199,
+      "p95": 6.705,
+      "p99": 7.948,
+      "max": 9.334,
+      "mean": 5.766,
+      "duration_s": 29.6,
+      "rps": 1.56,
+      "rps_start_to_start_overstated": 1.86,
+      "by_kind": {
+        "candle_fixed": {
+          "n": 15,
+          "p50": 6.289,
+          "p95": 6.655,
+          "err": 0,
+          "bytes_min": 20013,
+          "bytes_max": 20085,
+          "age_p50": 75280.8,
+          "age_max": 75297.0,
+          "empty": 0
+        },
+        "candle_fresh": {
+          "n": 20,
+          "p50": 6.536,
+          "p95": 6.843,
+          "err": 0,
+          "bytes_min": 22,
+          "bytes_max": 14592,
+          "age_p50": 953.3,
+          "age_max": 2385.4,
+          "empty": 1
+        },
+        "quote": {
+          "n": 20,
+          "p50": 5.815,
+          "p95": 6.25,
+          "err": 0,
+          "bytes_min": 249,
+          "bytes_max": 266,
+          "age_p50": 902.0,
+          "age_max": 923.5,
+          "empty": 0
+        }
+      }
+    },
+    {
+      "step": 3,
+      "concurrency": 25,
+      "n": 28,
+      "errors": 0,
+      "error_pct": 0.0,
+      "http_codes": {
+        "200": 28
+      },
+      "dx_status": {
+        "OK": 28
+      },
+      "p50": 8.265,
+      "p95": 14.936,
+      "p99": 15.002,
+      "max": 15.026,
+      "mean": 8.184,
+      "duration_s": 1.6,
+      "rps": 1.68,
+      "rps_start_to_start_overstated": 17.26,
+      "by_kind": {
+        "candle_fresh": {
+          "n": 3,
+          "p50": 14.937,
+          "p95": 15.017,
+          "err": 0,
+          "bytes_min": 6581,
+          "bytes_max": 14596,
+          "age_p50": 923.2,
+          "age_max": 1343.9,
+          "empty": 0
+        },
+        "quote": {
+          "n": 25,
+          "p50": 7.362,
+          "p95": 13.846,
+          "err": 0,
+          "bytes_min": 250,
+          "bytes_max": 265,
+          "age_p50": 901.5,
+          "age_max": 950.7,
+          "empty": 0
+        }
+      }
+    }
+  ],
+  "consistency_fixed_window": {
+    "AAPL": {
+      "n": 16,
+      "distinct_bodies": 1,
+      "distinct_sizes": [
+        20013
+      ],
+      "n_candles": [
+        61
+      ]
+    },
+    "TSLA": {
+      "n": 17,
+      "distinct_bodies": 1,
+      "distinct_sizes": [
+        20085
+      ],
+      "n_candles": [
+        61
+      ]
+    }
+  },
+  "fixed_window_latency": {
+    "first_request_s": 0.9906,
+    "p50_all": 3.031,
+    "p50_step0": 1.106
+  },
+  "header_keys_seen": {
+    "server": 144,
+    "date": 144,
+    "transfer-encoding": 144,
+    "connection": 144,
+    "x-origin-nginx": 144
+  },
+  "header_sample": {
+    "Server": "nginx",
+    "Date": "Fri, 16 Oct 2026 11:53:22 GMT",
+    "Transfer-Encoding": "chunked",
+    "Connection": "keep-alive",
+    "X-Origin-Nginx": "tools-demo"
+  },
+  "rate_limit_headers_present": false,
+  "errors_by_kind_symbol": {},
+  "timed_out_by_symbol": {
+    "AUD/USD": 3
+  },
+  "quote_latency_by_symbol": {
+    "/ESZ26:XCME": {
+      "n": 3,
+      "p50": 6.071,
+      "p95": 13.176
+    },
+    "AAPL": {
+      "n": 6,
+      "p50": 1.365,
+      "p95": 22.291
+    },
+    "AMZN": {
+      "n": 6,
+      "p50": 4.004,
+      "p95": 6.589
+    },
+    "AUD/USD": {
+      "n": 4,
+      "p50": 7.359,
+      "p95": 13.665
+    },
+    "DIA": {
+      "n": 6,
+      "p50": 4.381,
+      "p95": 7.515
+    },
+    "EUR/USD": {
+      "n": 5,
+      "p50": 4.962,
+      "p95": 10.957
+    },
+    "GBP/USD": {
+      "n": 6,
+      "p50": 5.892,
+      "p95": 12.764
+    },
+    "GOOG": {
+      "n": 5,
+      "p50": 6.126,
+      "p95": 11.469
+    },
+    "IBM": {
+      "n": 6,
+      "p50": 2.566,
+      "p95": 8.451
+    },
+    "MSFT": {
+      "n": 7,
+      "p50": 2.568,
+      "p95": 6.827
+    },
+    "SPY": {
+      "n": 4,
+      "p50": 2.563,
+      "p95": 10.304
+    },
+    "TSLA": {
+      "n": 4,
+      "p50": 1.675,
+      "p95": 6.04
+    },
+    "USD/JPY": {
+      "n": 5,
+      "p50": 5.505,
+      "p95": 9.046
+    }
+  },
+  "staleness_by_kind": {
+    "candle_fixed": {
+      "count": 33,
+      "median": 75246.3,
+      "min": 75204.9,
+      "max": 75297.0
+    },
+    "candle_fresh": {
+      "count": 41,
+      "median": 952.0,
+      "min": 900.5,
+      "max": 2385.4
+    },
+    "quote": {
+      "count": 67,
+      "median": 901.7,
+      "min": 900.3,
+      "max": 956.5
+    }
+  },
+  "latency_vs_concurrency_fit": {
+    "p50": {
+      "linear_slope_s_per_conn": 0.30015,
+      "linear_r2": 0.867,
+      "exp_rate_per_conn": 0.08496,
+      "exp_r2": 0.452,
+      "step_to_step_ratio": [
+        3.55,
+        2.31,
+        1.33
+      ],
+      "values": [
+        0.756,
+        2.684,
+        6.199,
+        8.265
+      ]
+    },
+    "p95": {
+      "linear_slope_s_per_conn": 0.0517,
+      "linear_r2": 0.005,
+      "exp_rate_per_conn": 0.01719,
+      "exp_r2": -0.107,
+      "step_to_step_ratio": [
+        0.16,
+        2.14,
+        2.23
+      ],
+      "values": [
+        20.005,
+        3.14,
+        6.705,
+        14.936
+      ]
+    }
+  }
+}

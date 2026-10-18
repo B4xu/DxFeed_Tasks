@@ -1,0 +1,43 @@
+{
+  "started_at": "2026-10-16T11:43:14.603Z",
+  "symbols": [
+    "AAPL"
+  ],
+  "seconds": 40,
+  "poll_s": 5.0,
+  "sse_url_params": {
+    "events": "Quote,Candle",
+    "symbols": "AAPL,AAPL{=1m}",
+    "fromTime": "2026-10-16T11:38:14Z"
+  },
+  "sse_http": 200,
+  "sse_headers": {
+    "Server": "nginx",
+    "Date": "Fri, 16 Oct 2026 11:43:15 GMT",
+    "Content-Type": "text/event-stream",
+    "Transfer-Encoding": "chunked",
+    "Connection": "keep-alive",
+    "Set-Cookie": "JSESSIONID=<redacted-anonymous-demo-session>;Path=/webservice",
+    "Expires": "Thu, 01 Jan 1970 00:00:00 GMT",
+    "X-Origin-Nginx": "demo, tools-demo",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+    "Access-Control-Max-Age": "86400",
+    "Content-Security-Policy": "upgrade-insecure-requests"
+  },
+  "finished_at": "2026-10-16T11:43:54.606Z",
+  "rest_polls": 8,
+  "sse_events": 0,
+  "quote_states_seen_both": 0,
+  "rest_minus_sse_lag_s": {
+    "median": null,
+    "min": null,
+    "max": null
+  },
+  "candle_updates_per_candle": {
+    "candles": 0,
+    "updates_total": 0,
+    "max_updates_one_candle": 0,
+    "sample": {}
+  }
+}

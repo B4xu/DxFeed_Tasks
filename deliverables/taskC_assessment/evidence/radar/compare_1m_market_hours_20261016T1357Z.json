@@ -1,0 +1,331 @@
+{
+  "radar_readout": {
+    "captured_at": "2026-10-16T13:57:40.252Z",
+    "period": "1m",
+    "preset": "Last Candle",
+    "rows": {
+      "AAPL": {
+        "open": 342.73,
+        "high": 343.63,
+        "low": 342.64,
+        "price": 343.475
+      },
+      "MSFT": {
+        "open": 535.98,
+        "high": 536.77,
+        "low": 535.9,
+        "price": 536.52
+      },
+      "GOOG": {
+        "open": 342.99,
+        "high": 343.348,
+        "low": 342.63,
+        "price": 342.865
+      },
+      "AMZN": {
+        "open": 252.99,
+        "high": 253.5,
+        "low": 252.9,
+        "price": 253.48
+      },
+      "NVDA": {
+        "open": 215.33,
+        "high": 215.49,
+        "low": 215.07,
+        "price": 215.49
+      },
+      "TSLA": {
+        "open": 369.435,
+        "high": 369.435,
+        "low": 367.371,
+        "price": 368.89
+      }
+    }
+  },
+  "rest": {
+    "AAPL": {
+      "requested_at": "2026-10-16T13:57:41.804Z",
+      "dx_status": "OK",
+      "n": 15,
+      "last": {
+        "time": "2026-10-16T13:42:00.000Z",
+        "open": 343.015,
+        "high": 343.13,
+        "low": 342.56,
+        "close": 342.58,
+        "volume": 150539.428912
+      }
+    },
+    "MSFT": {
+      "requested_at": "2026-10-16T13:57:43.385Z",
+      "dx_status": "OK",
+      "n": 15,
+      "last": {
+        "time": "2026-10-16T13:42:00.000Z",
+        "open": 536.4,
+        "high": 536.5706,
+        "low": 535.81,
+        "close": 536.01,
+        "volume": 32640.002577
+      }
+    },
+    "GOOG": {
+      "requested_at": "2026-10-16T13:57:44.989Z",
+      "dx_status": "OK",
+      "n": 15,
+      "last": {
+        "time": "2026-10-16T13:42:00.000Z",
+        "open": 343.21,
+        "high": 343.85,
+        "low": 342.85,
+        "close": 343.0866,
+        "volume": 29337.365822
+      }
+    },
+    "AMZN": {
+      "requested_at": "2026-10-16T13:57:46.570Z",
+      "dx_status": "OK",
+      "n": 15,
+      "last": {
+        "time": "2026-10-16T13:42:00.000Z",
+        "open": 253.5599,
+        "high": 253.86,
+        "low": 253.43,
+        "close": 253.66,
+        "volume": 52119.310518
+      }
+    },
+    "TSLA": {
+      "requested_at": "2026-10-16T13:57:47.983Z",
+      "dx_status": "OK",
+      "n": 15,
+      "last": {
+        "time": "2026-10-16T13:42:00.000Z",
+        "open": 368.9551,
+        "high": 369.21,
+        "low": 367.6989,
+        "close": 368.98,
+        "volume": 239600.98795
+      }
+    },
+    "NVDA": {
+      "requested_at": "2026-10-16T13:57:52.442Z",
+      "dx_status": "TIMED_OUT",
+      "n": 0
+    }
+  },
+  "notes": [
+    {
+      "sym": "AAPL",
+      "ohlc_close_ok": false,
+      "price_vs_close_delta": 0.895,
+      "rest_time": "2026-10-16T13:42:00.000Z"
+    },
+    {
+      "sym": "MSFT",
+      "ohlc_close_ok": false,
+      "price_vs_close_delta": 0.51,
+      "rest_time": "2026-10-16T13:42:00.000Z"
+    },
+    {
+      "sym": "GOOG",
+      "ohlc_close_ok": false,
+      "price_vs_close_delta": -0.2216,
+      "rest_time": "2026-10-16T13:42:00.000Z"
+    },
+    {
+      "sym": "AMZN",
+      "ohlc_close_ok": false,
+      "price_vs_close_delta": -0.18,
+      "rest_time": "2026-10-16T13:42:00.000Z"
+    },
+    {
+      "sym": "TSLA",
+      "ohlc_close_ok": false,
+      "price_vs_close_delta": -0.09,
+      "rest_time": "2026-10-16T13:42:00.000Z"
+    },
+    {
+      "sym": "NVDA",
+      "rest_dx": "TIMED_OUT",
+      "radar_has_data": true
+    }
+  ],
+  "rest_match_search": {
+    "captured_rest_at": "2026-10-16T13:58:12.815Z",
+    "matches": {
+      "AAPL": {
+        "best_ohlc_delta": 0.46,
+        "best_time": "2026-10-16T13:41:00.000Z",
+        "best_ohlc": {
+          "open": 342.73,
+          "high": 343.63,
+          "low": 342.64,
+          "close": 343.015,
+          "volume": 242161.214918
+        },
+        "best_ohl_only_delta": 0.0,
+        "best_ohl_time": "2026-10-16T13:41:00.000Z",
+        "best_ohl": {
+          "open": 342.73,
+          "high": 343.63,
+          "low": 342.64,
+          "close": 343.015,
+          "volume": 242161.214918
+        },
+        "last_rest": {
+          "open": 343.09,
+          "high": 343.32,
+          "low": 342.73,
+          "close": 343.29,
+          "time": "2026-10-16T13:43:00.000Z"
+        },
+        "n": 30
+      },
+      "MSFT": {
+        "best_ohlc_delta": 0.1,
+        "best_time": "2026-10-16T13:41:00.000Z",
+        "best_ohlc": {
+          "open": 535.98,
+          "high": 536.77,
+          "low": 535.9,
+          "close": 536.42,
+          "volume": 51300.627961
+        },
+        "best_ohl_only_delta": 0.0,
+        "best_ohl_time": "2026-10-16T13:41:00.000Z",
+        "best_ohl": {
+          "open": 535.98,
+          "high": 536.77,
+          "low": 535.9,
+          "close": 536.42,
+          "volume": 51300.627961
+        },
+        "last_rest": {
+          "open": 536.305,
+          "high": 536.8,
+          "low": 536.2,
+          "close": 536.665,
+          "time": "2026-10-16T13:43:00.000Z"
+        },
+        "n": 26
+      },
+      "GOOG": {
+        "best_ohlc_delta": 0.333,
+        "best_time": "2026-10-16T13:40:00.000Z",
+        "best_ohlc": {
+          "open": 342.885,
+          "high": 343.21,
+          "low": 342.625,
+          "close": 342.95,
+          "volume": 42405.176285
+        },
+        "best_ohl_only_delta": 0.0002,
+        "best_ohl_time": "2026-10-16T13:41:00.000Z",
+        "best_ohl": {
+          "open": 342.99,
+          "high": 343.3482,
+          "low": 342.63,
+          "close": 343.205,
+          "volume": 26799.701585
+        },
+        "last_rest": {
+          "open": 343.26,
+          "high": 343.2875,
+          "low": 343.075,
+          "close": 343.12,
+          "time": "2026-10-16T13:43:00.000Z"
+        },
+        "n": 28
+      },
+      "AMZN": {
+        "best_ohlc_delta": 0.11,
+        "best_time": "2026-10-16T13:41:00.000Z",
+        "best_ohlc": {
+          "open": 252.99,
+          "high": 253.57,
+          "low": 252.9,
+          "close": 253.52,
+          "volume": 79677.130777
+        },
+        "best_ohl_only_delta": 0.07,
+        "best_ohl_time": "2026-10-16T13:41:00.000Z",
+        "best_ohl": {
+          "open": 252.99,
+          "high": 253.57,
+          "low": 252.9,
+          "close": 253.52,
+          "volume": 79677.130777
+        },
+        "last_rest": {
+          "open": 253.705,
+          "high": 253.91,
+          "low": 253.68,
+          "close": 253.76,
+          "time": "2026-10-16T13:43:00.000Z"
+        },
+        "n": 28
+      },
+      "TSLA": {
+        "best_ohlc_delta": 0.18,
+        "best_time": "2026-10-16T13:41:00.000Z",
+        "best_ohlc": {
+          "open": 369.435,
+          "high": 369.435,
+          "low": 367.371,
+          "close": 369.07,
+          "volume": 306291.347998
+        },
+        "best_ohl_only_delta": 0.0,
+        "best_ohl_time": "2026-10-16T13:41:00.000Z",
+        "best_ohl": {
+          "open": 369.435,
+          "high": 369.435,
+          "low": 367.371,
+          "close": 369.07,
+          "volume": 306291.347998
+        },
+        "last_rest": {
+          "open": 368.915,
+          "high": 369.25,
+          "low": 368.5752,
+          "close": 369.005,
+          "time": "2026-10-16T13:43:00.000Z"
+        },
+        "n": 30
+      }
+    },
+    "radar": {
+      "AAPL": {
+        "open": 342.73,
+        "high": 343.63,
+        "low": 342.64,
+        "price": 343.475
+      },
+      "MSFT": {
+        "open": 535.98,
+        "high": 536.77,
+        "low": 535.9,
+        "price": 536.52
+      },
+      "GOOG": {
+        "open": 342.99,
+        "high": 343.348,
+        "low": 342.63,
+        "price": 342.865
+      },
+      "AMZN": {
+        "open": 252.99,
+        "high": 253.5,
+        "low": 252.9,
+        "price": 253.48
+      },
+      "TSLA": {
+        "open": 369.435,
+        "high": 369.435,
+        "low": 367.371,
+        "price": 368.89
+      }
+    }
+  }
+}

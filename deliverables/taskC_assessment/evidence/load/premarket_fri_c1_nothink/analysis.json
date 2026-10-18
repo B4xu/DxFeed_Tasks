@@ -1,0 +1,220 @@
+{
+  "run": "premarket_fri_c1_nothink",
+  "meta": {
+    "run": "premarket_fri_c1_nothink",
+    "started_at": "2026-10-16T12:04:23.284Z",
+    "steps": "1",
+    "step_seconds": 30.0,
+    "pause_seconds": 10.0,
+    "think_seconds": 0.0,
+    "budget": 200,
+    "endpoint": "https://demo.dxfeed.com/webservice/rest/events.json",
+    "symbols_quote": [
+      "AAPL",
+      "TSLA",
+      "SPY",
+      "MSFT",
+      "IBM",
+      "GOOG",
+      "AMZN",
+      "DIA",
+      "EUR/USD",
+      "GBP/USD",
+      "USD/JPY",
+      "AUD/USD",
+      "/ESZ26:XCME"
+    ],
+    "fixed_window": [
+      "2026-10-15T14:00:00Z",
+      "2026-10-15T15:00:00Z"
+    ],
+    "finished_at": "2026-10-16T12:05:04.354Z",
+    "total_requests": 35,
+    "stop_reason": null
+  },
+  "n": 35,
+  "per_step": [
+    {
+      "step": 0,
+      "concurrency": 1,
+      "n": 35,
+      "errors": 0,
+      "error_pct": 0.0,
+      "http_codes": {
+        "200": 35
+      },
+      "dx_status": {
+        "OK": 35
+      },
+      "p50": 0.773,
+      "p95": 1.733,
+      "p99": 2.227,
+      "max": 2.257,
+      "mean": 0.887,
+      "duration_s": 29.9,
+      "rps": 1.17,
+      "by_kind": {
+        "candle_fixed": {
+          "n": 11,
+          "p50": 0.703,
+          "p95": 1.705,
+          "err": 0,
+          "bytes_min": 20013,
+          "bytes_max": 20085,
+          "age_p50": 75881.4,
+          "age_max": 75892.7,
+          "empty": 0
+        },
+        "candle_fresh": {
+          "n": 12,
+          "p50": 1.207,
+          "p95": 1.537,
+          "err": 0,
+          "bytes_min": 340,
+          "bytes_max": 14583,
+          "age_p50": 948.5,
+          "age_max": 2969.7,
+          "empty": 0
+        },
+        "quote": {
+          "n": 12,
+          "p50": 0.409,
+          "p95": 1.587,
+          "err": 0,
+          "bytes_min": 250,
+          "bytes_max": 267,
+          "age_p50": 901.4,
+          "age_max": 951.3,
+          "empty": 0
+        }
+      }
+    }
+  ],
+  "consistency_fixed_window": {
+    "AAPL": {
+      "n": 6,
+      "distinct_bodies": 1,
+      "distinct_sizes": [
+        20013
+      ],
+      "n_candles": [
+        61
+      ]
+    },
+    "TSLA": {
+      "n": 5,
+      "distinct_bodies": 1,
+      "distinct_sizes": [
+        20085
+      ],
+      "n_candles": [
+        61
+      ]
+    }
+  },
+  "fixed_window_latency": {
+    "first_request_s": 1.198,
+    "p50_all": 0.703,
+    "p50_step0": 0.703
+  },
+  "header_keys_seen": {
+    "server": 35,
+    "date": 35,
+    "transfer-encoding": 35,
+    "connection": 35,
+    "x-origin-nginx": 35
+  },
+  "header_sample": {
+    "Server": "nginx",
+    "Date": "Fri, 16 Oct 2026 12:04:25 GMT",
+    "Transfer-Encoding": "chunked",
+    "Connection": "keep-alive",
+    "X-Origin-Nginx": "tools-demo"
+  },
+  "rate_limit_headers_present": false,
+  "errors_by_kind_symbol": {},
+  "timed_out_by_symbol": {},
+  "quote_latency_by_symbol": {
+    "/ESZ26:XCME": {
+      "n": 1,
+      "p50": 0.291,
+      "p95": 0.291
+    },
+    "AAPL": {
+      "n": 1,
+      "p50": 2.257,
+      "p95": 2.257
+    },
+    "AMZN": {
+      "n": 1,
+      "p50": 0.213,
+      "p95": 0.213
+    },
+    "AUD/USD": {
+      "n": 1,
+      "p50": 0.207,
+      "p95": 0.207
+    },
+    "DIA": {
+      "n": 1,
+      "p50": 0.436,
+      "p95": 0.436
+    },
+    "EUR/USD": {
+      "n": 1,
+      "p50": 0.414,
+      "p95": 0.414
+    },
+    "GBP/USD": {
+      "n": 1,
+      "p50": 1.04,
+      "p95": 1.04
+    },
+    "GOOG": {
+      "n": 1,
+      "p50": 0.312,
+      "p95": 0.312
+    },
+    "IBM": {
+      "n": 1,
+      "p50": 0.316,
+      "p95": 0.316
+    },
+    "MSFT": {
+      "n": 1,
+      "p50": 0.404,
+      "p95": 0.404
+    },
+    "SPY": {
+      "n": 1,
+      "p50": 1.018,
+      "p95": 1.018
+    },
+    "TSLA": {
+      "n": 1,
+      "p50": 0.415,
+      "p95": 0.415
+    }
+  },
+  "staleness_by_kind": {
+    "candle_fixed": {
+      "count": 11,
+      "median": 75881.4,
+      "min": 75868.1,
+      "max": 75892.7
+    },
+    "candle_fresh": {
+      "count": 12,
+      "median": 948.6,
+      "min": 926.9,
+      "max": 2969.7
+    },
+    "quote": {
+      "count": 12,
+      "median": 901.4,
+      "min": 900.5,
+      "max": 951.3
+    }
+  },
+  "latency_vs_concurrency_fit": {}
+}

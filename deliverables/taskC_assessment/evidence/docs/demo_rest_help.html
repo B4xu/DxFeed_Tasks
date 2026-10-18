@@ -1,0 +1,70 @@
+
+
+
+
+
+
+
+
+
+
+
+<html>
+<head>
+  <title>dxFeed REST API Help</title>
+  <link rel="stylesheet" href="../css/style.css"/>
+</head>
+<body>
+<h1>dxFeed REST API Help</h1>
+dxFeed REST API contains the following resources:
+
+<ul><li><a href="help">help</a> - Shows human-readable help.<li><a href="events">events</a> - Returns a snapshot of events.<li><a href="eventSource">eventSource</a> - Subscribes to event updates and returns a stream of Server-Sent Events.<li><a href="addSubscription">addSubscription</a> - Adds subscription to the previously created event stream.<li><a href="removeSubscription">removeSubscription</a> - Removes subscription from the previously created event stream (use same parameters as for subscription).</ul>
+
+Resources are available via GET and POST HTTP methods and recognize the following common request parameters which
+can be provided in URL or in request body of POST with "text/x-www-form-urlencoded" MIME type:
+
+<ul><li><b>event</b> : LIST - The type of event (like "Quote", "Trade", etc).<li><b>symbol</b> : LIST - The symbol (like "IBM", "MSFT", etc).<li><b>fromTime</b> : TIME - The time from which to return events.<li><b>source</b> : LIST - The source for indexed events.<li><b>indent</b> : STRING - The result is indented for better readability when this parameter is set.</ul>
+
+Additional parameters for specific resources are:
+
+<ul><li><a href="events">events</a><ul><li><b>toTime</b> : TIME - The time to which to return events.
+                It is optional for time series events and is ignored for other types of events.<li><b>timeout</b> : PERIOD - The maximal time to wait events from the data sources.
+                Use timeout=0 to return results from memory cache, given that the subscription was already established.</ul><li><a href="eventSource">eventSource</a><ul><li><b>session</b> : STRING - Session name. When set, then new web session is created (cookie is set) if needed and this
+                     subscription is stored into the session under a name specified in this parameter, so that this subscription
+                     can be later modified. The value of "DEFAULT_EVENT_SOURCE" is used by default when "session" parameter is set
+                     to an empty string.
+                     Please notice that the new web session is not created and session ID cookie is not returned
+                     if the request already contains a valid cookie for existing session ID.<li><b>reconnect</b> : STRING - Reconnect flag. When set, then existing session is recovered with its subscription.
+                     "session" parameter is implied when "reconnect" is set.</ul><li><a href="addSubscription">addSubscription</a><ul><li><b>session</b> : STRING - Session name.</ul><li><a href="removeSubscription">removeSubscription</a><ul><li><b>session</b> : STRING - Session name.</ul></ul>
+
+Parameter types are explained below:
+
+<ul><li><b>STRING</b> - Any string value.<li><b>TIME</b> - Date and time in full ISO8601 format "YYYY-MM-DD'T'HH:MM:SS[.SSS]Z", or a shorter versions of it like "YYYYMMDD-HHMMSSZ".<li><b>PERIOD</b> - Time interval in full ISO801 format "'PT'XXX('S'|'M'|'H')" or a short version of it without prefix, like "3s".<li><b>LIST</b> - A list of strings. Multiple values can be specified by using repeated parameters or by giving a comma-separated list of values to a parameter using a name with an additional "s" at the end. A standard x-www-form-urlencoded approach using a name with an additional "s[]" at the end is also supported. For example, to specify multiple events, use multiple "event" parameters, or use "events" parameter with a comma-separated list, or use multiple "events[]" parameters.</ul>
+
+Resources support multiple response formats with the exception of "help". The format can be specified as
+MIME type in HTTP "Accept" header or by adding the corresponding extension to the resource name.
+The later approach takes precedence. The formats are listed below:
+
+<ul><li><b>XML</b> - MIME type is "application/xml", extension is ".xml".<li><b>JSON</b> - MIME type is "application/json", extension is ".json".</ul>
+
+All available event types are listed below. The corresponding links lead to their full documentation.
+
+<p><span style="font-weight: bold">Market events</span> (see <a href="../javadoc/com/dxfeed/event/market/MarketEvent.html">MarketEvent</a>)<ul><li><a href="../javadoc/com/dxfeed/event/market/Profile.html">Profile</a> - Profile information snapshot that contains security instrument description.<li><a href="../javadoc/com/dxfeed/event/market/Quote.html">Quote</a> - Quote event is a snapshot of the best bid and ask prices, and other fields that change with each quote.<li><a href="../javadoc/com/dxfeed/event/market/Summary.html">Summary</a> - Summary information snapshot about the trading session including session highs, lows, etc.<li><a href="../javadoc/com/dxfeed/event/market/Trade.html">Trade</a> - Trade event is a snapshot of the price and size of the last trade during regular trading hours
+ and an overall day volume and day turnover.<li><a href="../javadoc/com/dxfeed/event/market/TradeETH.html">TradeETH</a> - TradeETH event is a snapshot of the price and size of the last trade during
+ extended trading hours and the extended trading hours day volume and day turnover.</ul><p><span style="font-weight: bold">Candle symbol events</span> (see <a href="../javadoc/com/dxfeed/event/candle/CandleSymbol.html">CandleSymbol</a>)<ul><li><a href="../javadoc/com/dxfeed/event/candle/Candle.html">Candle</a> - Candle event with open, high, low, close prices and other information for a specific period.<li><a href="../javadoc/com/dxfeed/event/candle/DailyCandle.html">DailyCandle</a> - In previous versions this class has represented candle with an additional properties that are collected for
+ optionable indices, stocks, and futures on a daily basis, for example implied volatility or open interest.</ul><p><span style="font-weight: bold">Other non-candle time series events</span> (see <a href="../javadoc/com/dxfeed/event/TimeSeriesEvent.html">TimeSeriesEvent</a>)<ul><li><a href="../javadoc/com/dxfeed/event/option/Greeks.html">Greeks</a> - Greeks event is a snapshot of the option price, Black-Scholes volatility and greeks.<li><a href="../javadoc/com/dxfeed/event/option/TheoPrice.html">TheoPrice</a> - Theo price is a snapshot of the theoretical option price computation that is
+ periodically performed by<li><a href="../javadoc/com/dxfeed/event/market/TimeAndSale.html">TimeAndSale</a> - Time and Sale represents a trade or other market event with price, like market open/close price, etc.<li><a href="../javadoc/com/dxfeed/event/option/Underlying.html">Underlying</a> - Underlying event is a snapshot of computed values that are available for an option underlying
+ symbol based on the option prices on the market.</ul><p><span style="font-weight: bold">Indexed events</span> (see <a href="../javadoc/com/dxfeed/event/IndexedEvent.html">IndexedEvent</a>)<ul><li><a href="../javadoc/com/dxfeed/event/market/AnalyticOrder.html">AnalyticOrder</a> - Represents an extension of<li><a href="../javadoc/com/dxfeed/event/market/OptionSale.html">OptionSale</a> - Option Sale event represents a trade or another market event with the price
+ (for example, market open/close price, etc.) for each option symbol listed under the specified Underlying.<li><a href="../javadoc/com/dxfeed/event/market/Order.html">Order</a> - Order event is a snapshot for a full available market depth for a symbol.<li><a href="../javadoc/com/dxfeed/event/option/Series.html">Series</a> - Series event is a snapshot of computed values that are available for all option series for
+ a given underlying symbol based on the option prices on the market.<li><a href="../javadoc/com/dxfeed/event/market/SpreadOrder.html">SpreadOrder</a> - Spread order event is a snapshot for a full available market depth for all spreads
+ on a given underlying symbol.</ul><p><span style="font-weight: bold">Other events</span> (see <a href="../javadoc/com/dxfeed/event/EventType.html">EventType</a>)<ul><li><a href="../javadoc/com/dxfeed/event/misc/Configuration.html">Configuration</a> - Configuration event with application-specific attachment.<li><a href="../javadoc/com/dxfeed/event/misc/Message.html">Message</a> - Message event with application-specific attachment.</ul>
+
+The following additional reference documents are available:
+
+<ul>
+  <li><a href="../xsd/dxfeed-event.xsd">xsd/dxfeed-event.xsd</a> - The XML schema for all event types.
+  <li><a href="../xsd/dxfeed-service.xsd">xsd/dxfeed-service.xsd</a> - The XML schema for the responses of REST API resources.
+</ul>
+
+</body>
+</html>

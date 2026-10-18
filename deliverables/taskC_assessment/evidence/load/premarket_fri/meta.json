@@ -1,0 +1,32 @@
+{
+  "run": "premarket_fri",
+  "started_at": "2026-10-16T11:52:56.667Z",
+  "steps": "1,5,10,25,50",
+  "step_seconds": 30.0,
+  "pause_seconds": 10.0,
+  "think_seconds": 0.25,
+  "budget": 3500,
+  "endpoint": "https://demo.dxfeed.com/webservice/rest/events.json",
+  "symbols_quote": [
+    "AAPL",
+    "TSLA",
+    "SPY",
+    "MSFT",
+    "IBM",
+    "GOOG",
+    "AMZN",
+    "DIA",
+    "EUR/USD",
+    "GBP/USD",
+    "USD/JPY",
+    "AUD/USD",
+    "/ESZ26:XCME"
+  ],
+  "fixed_window": [
+    "2026-10-15T14:00:00Z",
+    "2026-10-15T15:00:00Z"
+  ],
+  "finished_at": "2026-10-16T11:55:23.951Z",
+  "total_requests": 144,
+  "stop_reason": "p50 latency 8.3s at step 3"
+}

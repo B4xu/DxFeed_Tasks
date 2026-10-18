@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+*.egg-info/
+
+# Local runtime state
+tmp/
+*.log
+*.pid
+*.out
+.env
+
+# Credentials — Drive service account lives only in GitHub secrets
+service_account*.json
+*credentials*.json
+*.pem
+*.key
+
+# Office lock files and editor noise
+~$*
+.~lock.*#
+.DS_Store
+.idea/
+.vscode/
+*.whl
+
+# Assignment briefs from dxFeed — not ours to publish
+Incident_investigation.pdf
+Support_engineer_Assesment.pdf

@@ -1,0 +1,88 @@
+{
+  "conclusion": "TimeAndSale with fromTime/toTime (and without range) returns HTTP 200 TIMED_OUT with empty body. Trade with a 2s window returns status OK but 0 events. Candle control for the same hour returns OK with 1 candle. The demo REST surface does not yield usable TimeAndSale/Trade history for sale-condition testing. Limitation \u2014 hypotheses about print inclusion cannot be tested this way; move on.",
+  "probes_summary": [
+    {
+      "tag": "TimeAndSale_2s",
+      "dx": "TIMED_OUT",
+      "n": 0
+    },
+    {
+      "tag": "TimeAndSale_no_range",
+      "dx": "TIMED_OUT",
+      "n": 0
+    },
+    {
+      "tag": "Trade_2s",
+      "dx": "OK",
+      "n": 0
+    },
+    {
+      "tag": "Candle_ok_control",
+      "dx": "OK",
+      "n": 1
+    }
+  ],
+  "probes": [
+    {
+      "tag": "tas_probe_2s",
+      "at": "2026-10-16T13:46:16.559Z",
+      "dx_status": "TIMED_OUT",
+      "http": 200,
+      "latency_s": 3.180123647000073,
+      "n_events": 0,
+      "data_keys": [
+        "status"
+      ],
+      "sample_fields": [],
+      "sample0": null
+    },
+    {
+      "tag": "tas_probe_symbol_variants",
+      "at": "2026-10-16T13:46:22.974Z",
+      "dx_status": "TIMED_OUT",
+      "http": 200,
+      "latency_s": 5.215073317000133,
+      "n_events": 0,
+      "data_keys": [
+        "status"
+      ],
+      "sample_fields": [],
+      "sample0": null
+    },
+    {
+      "tag": "Trade_2s",
+      "dx": "OK",
+      "http": 200,
+      "keys": [
+        "status",
+        "Trade"
+      ],
+      "n": 0,
+      "lat": 0.6070429529991088,
+      "at": "2026-10-16T13:47:18.938Z"
+    },
+    {
+      "tag": "TimeAndSale_no_range",
+      "dx": "TIMED_OUT",
+      "http": 200,
+      "keys": [
+        "status"
+      ],
+      "n": 0,
+      "lat": 0.20156924399998388,
+      "at": "2026-10-16T13:47:20.340Z"
+    },
+    {
+      "tag": "Candle_ok_control",
+      "dx": "OK",
+      "http": 200,
+      "keys": [
+        "status",
+        "Candle"
+      ],
+      "n": 1,
+      "lat": 0.504485138999371,
+      "at": "2026-10-16T13:47:22.045Z"
+    }
+  ]
+}

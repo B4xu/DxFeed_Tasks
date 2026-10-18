@@ -1,0 +1,54 @@
+{
+  "started_at": "2026-10-16T12:08:29.297Z",
+  "symbols": [
+    "AAPL",
+    "TSLA",
+    "EUR/USD"
+  ],
+  "seconds": 180,
+  "poll_s": 5.0,
+  "sse_url_params": {
+    "events": "Quote,Candle",
+    "symbols": "AAPL,TSLA,EUR/USD,AAPL{=1m},TSLA{=1m},EUR/USD{=1m}",
+    "fromTime": "2026-10-16T12:03:29Z"
+  },
+  "sse_http": 200,
+  "sse_headers": {
+    "Server": "nginx",
+    "Date": "Fri, 16 Oct 2026 12:08:29 GMT",
+    "Content-Type": "text/event-stream",
+    "Transfer-Encoding": "chunked",
+    "Connection": "keep-alive",
+    "Set-Cookie": "JSESSIONID=<redacted-anonymous-demo-session>;Path=/webservice",
+    "Expires": "Thu, 01 Jan 1970 00:00:00 GMT",
+    "X-Origin-Nginx": "demo, tools-demo",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+    "Access-Control-Max-Age": "86400",
+    "Content-Security-Policy": "upgrade-insecure-requests"
+  },
+  "sse_events": 646,
+  "finished_at": "2026-10-16T12:11:29.826Z",
+  "rest_polls": 36,
+  "quote_states_seen_both": 77,
+  "rest_minus_sse_lag_s": {
+    "median": 0.72,
+    "min": -0.12,
+    "max": 4.82
+  },
+  "candle_updates_per_candle": {
+    "candles": 8,
+    "updates_total": 10,
+    "max_updates_one_candle": 2,
+    "sample": {
+      "TSLA|1792152209000": 1,
+      "EUR/USD|1792152209000": 1,
+      "AAPL|1792152209000": 1,
+      "AAPL{=m}|1792152209000": 2,
+      "TSLA{=m}|1792152209000": 2,
+      "EUR/USD{=m}|1792152209000": 1,
+      "AAPL{=m}|2147483648022": 1,
+      "TSLA{=m}|2147483648022": 1
+    }
+  }
+}

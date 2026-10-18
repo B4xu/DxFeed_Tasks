@@ -1,0 +1,47 @@
+{
+  "connector_limit": 52,
+  "limit_per_host": 0,
+  "client_pool_could_bind": false,
+  "steps": [
+    {
+      "c": 1,
+      "n": 39,
+      "thr": 1.309,
+      "mean_lat": 0.519,
+      "L_pred": 0.68,
+      "L_meas": 0.68
+    },
+    {
+      "c": 5,
+      "n": 99,
+      "thr": 3.176,
+      "mean_lat": 1.304,
+      "L_pred": 4.143,
+      "L_meas": 4.143
+    },
+    {
+      "c": 10,
+      "n": 104,
+      "thr": 3.188,
+      "mean_lat": 2.752,
+      "L_pred": 8.771,
+      "L_meas": 8.771
+    },
+    {
+      "c": 25,
+      "n": 124,
+      "thr": 3.023,
+      "mean_lat": 6.802,
+      "L_pred": 20.561,
+      "L_meas": 20.561
+    },
+    {
+      "c": 50,
+      "n": 138,
+      "thr": 2.781,
+      "mean_lat": 12.977,
+      "L_pred": 36.089,
+      "L_meas": 36.089
+    }
+  ]
+}

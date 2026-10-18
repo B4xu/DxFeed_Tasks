@@ -1,0 +1,496 @@
+{
+  "run": "market_hours_fri",
+  "meta": {
+    "run": "market_hours_fri",
+    "started_at": "2026-10-16T13:47:21.081Z",
+    "steps": "1,5,10,25,50",
+    "step_seconds": 30.0,
+    "pause_seconds": 10.0,
+    "think_seconds": 0.25,
+    "budget": 3500,
+    "endpoint": "https://demo.dxfeed.com/webservice/rest/events.json",
+    "symbols_quote": [
+      "AAPL",
+      "TSLA",
+      "SPY",
+      "MSFT",
+      "IBM",
+      "GOOG",
+      "AMZN",
+      "DIA",
+      "EUR/USD",
+      "GBP/USD",
+      "USD/JPY",
+      "AUD/USD",
+      "/ESZ26:XCME"
+    ],
+    "fixed_window": [
+      "2026-10-15T14:00:00Z",
+      "2026-10-15T15:00:00Z"
+    ],
+    "finished_at": "2026-10-16T13:51:06.362Z",
+    "total_requests": 504,
+    "stop_reason": "p50 latency 8.3s at step 4"
+  },
+  "n": 504,
+  "per_step": [
+    {
+      "step": 0,
+      "concurrency": 1,
+      "n": 39,
+      "errors": 0,
+      "error_pct": 0.0,
+      "http_codes": {
+        "200": 39
+      },
+      "dx_status": {
+        "OK": 38,
+        "TIMED_OUT": 1
+      },
+      "p50": 0.453,
+      "p95": 0.81,
+      "p99": 2.367,
+      "max": 3.317,
+      "mean": 0.519,
+      "duration_s": 29.4,
+      "rps": 1.31,
+      "rps_start_to_start_overstated": 1.32,
+      "by_kind": {
+        "candle_fixed": {
+          "n": 13,
+          "p50": 0.453,
+          "p95": 0.716,
+          "err": 0,
+          "bytes_min": 20013,
+          "bytes_max": 20085,
+          "age_p50": 82055.6,
+          "age_max": 82070.9,
+          "empty": 0
+        },
+        "candle_fresh": {
+          "n": 13,
+          "p50": 0.663,
+          "p95": 1.817,
+          "err": 0,
+          "bytes_min": 22,
+          "bytes_max": 14650,
+          "age_p50": 934.0,
+          "age_max": 945.3,
+          "empty": 1
+        },
+        "quote": {
+          "n": 13,
+          "p50": 0.166,
+          "p95": 0.467,
+          "err": 0,
+          "bytes_min": 251,
+          "bytes_max": 268,
+          "age_p50": 900.3,
+          "age_max": 924.1,
+          "empty": 0
+        }
+      }
+    },
+    {
+      "step": 1,
+      "concurrency": 5,
+      "n": 99,
+      "errors": 0,
+      "error_pct": 0.0,
+      "http_codes": {
+        "200": 99
+      },
+      "dx_status": {
+        "OK": 97,
+        "TIMED_OUT": 2
+      },
+      "p50": 1.141,
+      "p95": 2.299,
+      "p99": 3.964,
+      "max": 4.546,
+      "mean": 1.304,
+      "duration_s": 29.7,
+      "rps": 3.18,
+      "rps_start_to_start_overstated": 3.34,
+      "by_kind": {
+        "candle_fixed": {
+          "n": 31,
+          "p50": 1.194,
+          "p95": 2.065,
+          "err": 0,
+          "bytes_min": 20013,
+          "bytes_max": 20085,
+          "age_p50": 82097.9,
+          "age_max": 82112.2,
+          "empty": 0
+        },
+        "candle_fresh": {
+          "n": 34,
+          "p50": 1.728,
+          "p95": 3.022,
+          "err": 0,
+          "bytes_min": 22,
+          "bytes_max": 14661,
+          "age_p50": 916.9,
+          "age_max": 932.3,
+          "empty": 2
+        },
+        "quote": {
+          "n": 34,
+          "p50": 0.773,
+          "p95": 1.483,
+          "err": 0,
+          "bytes_min": 250,
+          "bytes_max": 268,
+          "age_p50": 900.5,
+          "age_max": 930.6,
+          "empty": 0
+        }
+      }
+    },
+    {
+      "step": 2,
+      "concurrency": 10,
+      "n": 104,
+      "errors": 0,
+      "error_pct": 0.0,
+      "http_codes": {
+        "200": 104
+      },
+      "dx_status": {
+        "OK": 101,
+        "TIMED_OUT": 3
+      },
+      "p50": 2.541,
+      "p95": 4.224,
+      "p99": 6.305,
+      "max": 6.961,
+      "mean": 2.752,
+      "duration_s": 29.7,
+      "rps": 3.19,
+      "rps_start_to_start_overstated": 3.5,
+      "by_kind": {
+        "candle_fixed": {
+          "n": 31,
+          "p50": 2.504,
+          "p95": 4.129,
+          "err": 0,
+          "bytes_min": 20013,
+          "bytes_max": 20085,
+          "age_p50": 82141.1,
+          "age_max": 82154.3,
+          "empty": 0
+        },
+        "candle_fresh": {
+          "n": 35,
+          "p50": 3.192,
+          "p95": 5.468,
+          "err": 0,
+          "bytes_min": 22,
+          "bytes_max": 14733,
+          "age_p50": 946.6,
+          "age_max": 959.8,
+          "empty": 3
+        },
+        "quote": {
+          "n": 38,
+          "p50": 1.96,
+          "p95": 3.655,
+          "err": 0,
+          "bytes_min": 251,
+          "bytes_max": 268,
+          "age_p50": 900.3,
+          "age_max": 925.3,
+          "empty": 0
+        }
+      }
+    },
+    {
+      "step": 3,
+      "concurrency": 25,
+      "n": 124,
+      "errors": 0,
+      "error_pct": 0.0,
+      "http_codes": {
+        "200": 124
+      },
+      "dx_status": {
+        "OK": 120,
+        "TIMED_OUT": 4
+      },
+      "p50": 5.279,
+      "p95": 12.172,
+      "p99": 14.186,
+      "max": 14.762,
+      "mean": 6.802,
+      "duration_s": 29.8,
+      "rps": 3.02,
+      "rps_start_to_start_overstated": 4.16,
+      "by_kind": {
+        "candle_fixed": {
+          "n": 36,
+          "p50": 11.185,
+          "p95": 11.927,
+          "err": 0,
+          "bytes_min": 20013,
+          "bytes_max": 20085,
+          "age_p50": 82192.4,
+          "age_max": 82203.1,
+          "empty": 0
+        },
+        "candle_fresh": {
+          "n": 39,
+          "p50": 11.939,
+          "p95": 12.522,
+          "err": 0,
+          "bytes_min": 22,
+          "bytes_max": 14678,
+          "age_p50": 943.2,
+          "age_max": 958.3,
+          "empty": 4
+        },
+        "quote": {
+          "n": 49,
+          "p50": 2.616,
+          "p95": 11.437,
+          "err": 0,
+          "bytes_min": 251,
+          "bytes_max": 268,
+          "age_p50": 900.5,
+          "age_max": 933.1,
+          "empty": 0
+        }
+      }
+    },
+    {
+      "step": 4,
+      "concurrency": 50,
+      "n": 138,
+      "errors": 0,
+      "error_pct": 0.0,
+      "http_codes": {
+        "200": 138
+      },
+      "dx_status": {
+        "OK": 135,
+        "TIMED_OUT": 3
+      },
+      "p50": 8.283,
+      "p95": 26.552,
+      "p99": 28.241,
+      "max": 29.169,
+      "mean": 12.977,
+      "duration_s": 29.7,
+      "rps": 2.78,
+      "rps_start_to_start_overstated": 4.64,
+      "by_kind": {
+        "candle_fixed": {
+          "n": 17,
+          "p50": 3.346,
+          "p95": 3.993,
+          "err": 0,
+          "bytes_min": 20013,
+          "bytes_max": 20085,
+          "age_p50": 82236.4,
+          "age_max": 82248.2,
+          "empty": 0
+        },
+        "candle_fresh": {
+          "n": 57,
+          "p50": 26.385,
+          "p95": 26.623,
+          "err": 0,
+          "bytes_min": 22,
+          "bytes_max": 14773,
+          "age_p50": 944.4,
+          "age_max": 959.2,
+          "empty": 3
+        },
+        "quote": {
+          "n": 64,
+          "p50": 7.084,
+          "p95": 24.114,
+          "err": 0,
+          "bytes_min": 251,
+          "bytes_max": 268,
+          "age_p50": 900.4,
+          "age_max": 931.9,
+          "empty": 0
+        }
+      }
+    }
+  ],
+  "consistency_fixed_window": {
+    "AAPL": {
+      "n": 66,
+      "distinct_bodies": 1,
+      "distinct_sizes": [
+        20013
+      ],
+      "n_candles": [
+        61
+      ]
+    },
+    "TSLA": {
+      "n": 62,
+      "distinct_bodies": 1,
+      "distinct_sizes": [
+        20085
+      ],
+      "n_candles": [
+        61
+      ]
+    }
+  },
+  "fixed_window_latency": {
+    "first_request_s": 0.3576,
+    "p50_all": 2.438,
+    "p50_step0": 0.453
+  },
+  "header_keys_seen": {
+    "server": 504,
+    "date": 504,
+    "transfer-encoding": 504,
+    "connection": 504,
+    "x-origin-nginx": 504
+  },
+  "header_sample": {
+    "Server": "nginx",
+    "Date": "Fri, 16 Oct 2026 13:47:22 GMT",
+    "Transfer-Encoding": "chunked",
+    "Connection": "keep-alive",
+    "X-Origin-Nginx": "tools-demo"
+  },
+  "rate_limit_headers_present": false,
+  "errors_by_kind_symbol": {},
+  "timed_out_by_symbol": {
+    "AUD/USD": 13
+  },
+  "quote_latency_by_symbol": {
+    "/ESZ26:XCME": {
+      "n": 12,
+      "p50": 2.418,
+      "p95": 18.218
+    },
+    "AAPL": {
+      "n": 15,
+      "p50": 1.957,
+      "p95": 9.12
+    },
+    "AMZN": {
+      "n": 17,
+      "p50": 3.162,
+      "p95": 16.282
+    },
+    "AUD/USD": {
+      "n": 15,
+      "p50": 2.861,
+      "p95": 19.271
+    },
+    "DIA": {
+      "n": 14,
+      "p50": 2.428,
+      "p95": 20.834
+    },
+    "EUR/USD": {
+      "n": 17,
+      "p50": 2.586,
+      "p95": 12.032
+    },
+    "GBP/USD": {
+      "n": 18,
+      "p50": 2.879,
+      "p95": 23.779
+    },
+    "GOOG": {
+      "n": 15,
+      "p50": 1.66,
+      "p95": 13.755
+    },
+    "IBM": {
+      "n": 17,
+      "p50": 2.357,
+      "p95": 13.037
+    },
+    "MSFT": {
+      "n": 16,
+      "p50": 2.298,
+      "p95": 10.234
+    },
+    "SPY": {
+      "n": 13,
+      "p50": 1.914,
+      "p95": 19.391
+    },
+    "TSLA": {
+      "n": 15,
+      "p50": 3.042,
+      "p95": 22.16
+    },
+    "USD/JPY": {
+      "n": 14,
+      "p50": 3.01,
+      "p95": 20.295
+    }
+  },
+  "staleness_by_kind": {
+    "candle_fixed": {
+      "count": 128,
+      "median": 82144.1,
+      "min": 82043.5,
+      "max": 82248.2
+    },
+    "candle_fresh": {
+      "count": 165,
+      "median": 939.2,
+      "min": 899.8,
+      "max": 959.8
+    },
+    "quote": {
+      "count": 198,
+      "median": 900.4,
+      "min": 899.5,
+      "max": 933.1
+    }
+  },
+  "latency_vs_concurrency_fit": {
+    "p50": {
+      "linear_slope_s_per_conn": 0.16028,
+      "linear_r2": 0.98,
+      "exp_rate_per_conn": 0.0519,
+      "exp_r2": 0.582,
+      "step_to_step_ratio": [
+        2.52,
+        2.23,
+        2.08,
+        1.57
+      ],
+      "values": [
+        0.453,
+        1.141,
+        2.541,
+        5.279,
+        8.283
+      ]
+    },
+    "p95": {
+      "linear_slope_s_per_conn": 0.53186,
+      "linear_r2": 0.997,
+      "exp_rate_per_conn": 0.06401,
+      "exp_r2": 0.715,
+      "step_to_step_ratio": [
+        2.84,
+        1.84,
+        2.88,
+        2.18
+      ],
+      "values": [
+        0.81,
+        2.299,
+        4.224,
+        12.172,
+        26.552
+      ]
+    }
+  }
+}

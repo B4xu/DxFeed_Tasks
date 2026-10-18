@@ -1,0 +1,32 @@
+{
+  "run": "smoke_premarket",
+  "started_at": "2026-10-16T11:42:07.020Z",
+  "steps": "1,2",
+  "step_seconds": 8.0,
+  "pause_seconds": 2.0,
+  "think_seconds": 0.25,
+  "budget": 60,
+  "endpoint": "https://demo.dxfeed.com/webservice/rest/events.json",
+  "symbols_quote": [
+    "AAPL",
+    "TSLA",
+    "SPY",
+    "MSFT",
+    "IBM",
+    "GOOG",
+    "AMZN",
+    "DIA",
+    "EUR/USD",
+    "GBP/USD",
+    "USD/JPY",
+    "AUD/USD",
+    "/ESZ26:XCME"
+  ],
+  "fixed_window": [
+    "2026-10-15T14:00:00Z",
+    "2026-10-15T15:00:00Z"
+  ],
+  "finished_at": "2026-10-16T11:42:30.113Z",
+  "total_requests": 24,
+  "stop_reason": null
+}

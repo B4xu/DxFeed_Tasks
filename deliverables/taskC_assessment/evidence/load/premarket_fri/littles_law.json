@@ -1,0 +1,48 @@
+{
+  "connector_limit": 52,
+  "limit_per_host": 0,
+  "think_s": 0.25,
+  "client_pool_could_bind": false,
+  "steps": [
+    {
+      "c": 1,
+      "n": 6,
+      "duration_s": 30.78,
+      "thr": 0.195,
+      "mean_lat": 4.922,
+      "L_pred": 0.959,
+      "L_meas": 0.959,
+      "matched_concurrency": true
+    },
+    {
+      "c": 5,
+      "n": 55,
+      "duration_s": 33.79,
+      "thr": 1.628,
+      "mean_lat": 2.693,
+      "L_pred": 4.384,
+      "L_meas": 4.384,
+      "matched_concurrency": true
+    },
+    {
+      "c": 10,
+      "n": 55,
+      "duration_s": 35.28,
+      "thr": 1.559,
+      "mean_lat": 5.766,
+      "L_pred": 8.99,
+      "L_meas": 8.99,
+      "matched_concurrency": true
+    },
+    {
+      "c": 25,
+      "n": 28,
+      "duration_s": 16.65,
+      "thr": 1.682,
+      "mean_lat": 8.184,
+      "L_pred": 13.764,
+      "L_meas": 13.764,
+      "matched_concurrency": false
+    }
+  ]
+}

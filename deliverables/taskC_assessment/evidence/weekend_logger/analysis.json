@@ -1,0 +1,123 @@
+{
+  "polls": 64,
+  "first": "2026-10-16T11:10:32.810000+00:00",
+  "last": "2026-10-16T12:12:20.862000+00:00",
+  "instruments": {
+    "AAPL": {
+      "polls": 64,
+      "errors_quote": 0,
+      "errors_candle": 0,
+      "quote_latency_p50_s": 0.166,
+      "candle_latency_p50_s": 0.514,
+      "candle_latency_max_s": 3.333,
+      "delay_baseline_quote_age_s": {
+        "p10": 901.9,
+        "median": 907.4,
+        "p90": 941.1
+      },
+      "candle_age_when_open": {
+        "median": 920.9,
+        "p90": 980.9,
+        "max": 1112.8
+      },
+      "max_quote_age_s": 1056.9,
+      "max_candle_age_s": 1112.8,
+      "freeze_runs_while_open": [],
+      "session_transitions_observed": [
+        {
+          "at": "2026-10-16T11:10:32.810000+00:00",
+          "open_expected": true,
+          "last_candle_time": "2026-10-16T10:52:00.000Z",
+          "quote_time": "2026-10-16T10:54:46.000Z"
+        }
+      ]
+    },
+    "EURUSD": {
+      "polls": 64,
+      "errors_quote": 0,
+      "errors_candle": 0,
+      "quote_latency_p50_s": 0.166,
+      "candle_latency_p50_s": 0.698,
+      "candle_latency_max_s": 6.364,
+      "delay_baseline_quote_age_s": {
+        "p10": 900.9,
+        "median": 900.9,
+        "p90": 901.6
+      },
+      "candle_age_when_open": {
+        "median": 920.9,
+        "p90": 920.9,
+        "max": 932.8
+      },
+      "max_quote_age_s": 901.9,
+      "max_candle_age_s": 932.8,
+      "freeze_runs_while_open": [],
+      "session_transitions_observed": [
+        {
+          "at": "2026-10-16T11:10:32.810000+00:00",
+          "open_expected": true,
+          "last_candle_time": "2026-10-16T10:55:00.000Z",
+          "quote_time": "2026-10-16T10:55:33.000Z"
+        }
+      ]
+    },
+    "TSLA": {
+      "polls": 64,
+      "errors_quote": 0,
+      "errors_candle": 0,
+      "quote_latency_p50_s": 0.166,
+      "candle_latency_p50_s": 0.566,
+      "candle_latency_max_s": 5.964,
+      "delay_baseline_quote_age_s": {
+        "p10": 900.9,
+        "median": 901.9,
+        "p90": 904.9
+      },
+      "candle_age_when_open": {
+        "median": 920.9,
+        "p90": 920.9,
+        "max": 932.8
+      },
+      "max_quote_age_s": 906.9,
+      "max_candle_age_s": 932.8,
+      "freeze_runs_while_open": [],
+      "session_transitions_observed": [
+        {
+          "at": "2026-10-16T11:10:32.810000+00:00",
+          "open_expected": true,
+          "last_candle_time": "2026-10-16T10:55:00.000Z",
+          "quote_time": "2026-10-16T10:55:32.000Z"
+        }
+      ]
+    },
+    "ES": {
+      "polls": 64,
+      "errors_quote": 0,
+      "errors_candle": 0,
+      "quote_latency_p50_s": 0.166,
+      "candle_latency_p50_s": 0.509,
+      "candle_latency_max_s": 6.18,
+      "delay_baseline_quote_age_s": {
+        "p10": 900.9,
+        "median": 900.9,
+        "p90": 900.9
+      },
+      "candle_age_when_open": {
+        "median": 920.9,
+        "p90": 920.9,
+        "max": 932.8
+      },
+      "max_quote_age_s": 901.9,
+      "max_candle_age_s": 932.8,
+      "freeze_runs_while_open": [],
+      "session_transitions_observed": [
+        {
+          "at": "2026-10-16T11:10:32.810000+00:00",
+          "open_expected": true,
+          "last_candle_time": "2026-10-16T10:55:00.000Z",
+          "quote_time": "2026-10-16T10:55:32.000Z"
+        }
+      ]
+    }
+  }
+}

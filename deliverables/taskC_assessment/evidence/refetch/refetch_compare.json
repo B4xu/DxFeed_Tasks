@@ -1,0 +1,75 @@
+{
+  "refetch1_at": "2026-10-16T13:46:09.860Z",
+  "refetch2_at": "2026-10-16T13:57:37.831Z",
+  "gap_minutes": 11.47,
+  "pass1": {
+    "AAPL": {
+      "volume": 2148473.897334,
+      "count": 106811
+    },
+    "TSLA": {
+      "volume": 2053134.288527,
+      "count": 117527
+    }
+  },
+  "refetch1": {
+    "AAPL": {
+      "volume": 2148473.897334,
+      "count": 106811,
+      "open": 337.8,
+      "high": 338.34,
+      "low": 337.17,
+      "close": 338.13,
+      "delta_volume_vs_pass1": 0.0,
+      "delta_count_vs_pass1": 0,
+      "identical_to_pass1_ohlcv_count": true
+    },
+    "TSLA": {
+      "volume": 2053134.288527,
+      "count": 117527,
+      "open": 373.0302,
+      "high": 373.37,
+      "low": 371.69,
+      "close": 371.9033,
+      "delta_volume_vs_pass1": 0.0,
+      "delta_count_vs_pass1": 0,
+      "identical_to_pass1_ohlcv_count": true
+    }
+  },
+  "refetch2": {
+    "AAPL": {
+      "volume": 2148473.897334,
+      "count": 106811,
+      "open": 337.8,
+      "high": 338.34,
+      "low": 337.17,
+      "close": 338.13,
+      "delta_volume_vs_pass1": 0.0,
+      "delta_count_vs_pass1": 0,
+      "delta_volume_vs_refetch1": 0.0,
+      "delta_count_vs_refetch1": 0,
+      "identical_to_pass1": true,
+      "identical_to_refetch1": true
+    },
+    "TSLA": {
+      "volume": 2053134.288527,
+      "count": 117527,
+      "open": 373.0302,
+      "high": 373.37,
+      "low": 371.69,
+      "close": 371.9033,
+      "delta_volume_vs_pass1": 0.0,
+      "delta_count_vs_pass1": 0,
+      "delta_volume_vs_refetch1": 0.0,
+      "delta_count_vs_refetch1": 0,
+      "identical_to_pass1": true,
+      "identical_to_refetch1": true
+    }
+  },
+  "stability": {
+    "AAPL": "stable",
+    "TSLA": "stable"
+  },
+  "supports_late_update_hypothesis": false,
+  "conclusion": "Both AAPL and TSLA 1h candles for 2026-10-08 15:00Z are byte-stable across pass1 (~11:34Z), refetch1 (2026-10-16T13:46:09.860Z) and refetch2 (2026-10-16T13:57:37.831Z, +11.47 min): volume and count unchanged. This does not support a continuing late-update/correction hypothesis for these closed bars over the observed window; it neither proves nor disproves that corrections occurred between trade time and pass1."
+}

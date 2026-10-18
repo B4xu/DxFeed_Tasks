@@ -1,0 +1,11 @@
+requests>=2.31
+beautifulsoup4>=4.12
+lxml>=5
+pandas>=2.2
+openpyxl>=3.1
+pdfplumber>=0.11
+tzdata>=2024.1
+google-api-python-client>=2.120
+google-auth>=2.29
+playwright>=1.44
+pytest>=8
