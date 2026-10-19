@@ -37,9 +37,10 @@ no stealth). Both pages list only the current year. Early-close rows are labelle
 metals, ags) and venue (Globex vs ClearPort), so there is no single CME calendar. Scope
 chosen: **CME Globex US Equity Index futures and options** (ES, NQ, YM, RTY), the products
 most relevant to a US-equities data consumer. Because cmegroup.com blocks automated clients
-and its terms forbid scraping, the adapter consumes operator-downloaded PDFs or a CSV
-(`input/cme/`). Rows are produced only from those files; nothing is inferred. This is the
-main known limitation of the deliverable.
+and its terms forbid scraping, the adapter consumes operator-downloaded files in
+`input/cme/`: Trading Hours → Holidays Excel exports (Equities row only), CSV, or PDFs.
+Rows are produced only from those files; nothing is inferred. As of 2026-10-19 the folder
+holds Thanksgiving/Christmas 2026 plus a full set of 2027 holiday xlsx downloads.
 
 **OPRA.** OPRA, LLC (not OCC) publishes the options holiday schedule. Its PDF confirms that
 listed options follow the US equity calendar, with early closes stated as "3 hours early"

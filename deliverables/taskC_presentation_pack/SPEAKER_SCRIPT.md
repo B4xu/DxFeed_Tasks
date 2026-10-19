@@ -1,6 +1,6 @@
 # Speaker script — Task C 45-minute live presentation
 
-**Slides:** 26 · **Target:** 45 minutes  
+**Slides:** 27 · **Target:** 45 minutes  
 **Pacing:** ~3 min context · 3 min Task A · 15 min data · 9 min load · 10 min risk/incident/improvements · 5 min Q&A
 
 ## Global rules while speaking
@@ -43,125 +43,131 @@ Task A: holiday calendar. About 3 minutes. The calendar Task C uses to tell a ho
 
 ## Slide 6 — NYSE and NASDAQ agree on every 2026 date
 
-I built a small scraper with one adapter per exchange. It writes one CSV per exchange plus a combined file, and validates them. NYSE and NASDAQ match on every closed day and early close in 2026. The overall result is WARN, not FAIL. CME is a deliberate gap: its site terms forbid scraping, so the adapter only reads files dropped in by hand. OPRA has only published the 2025 PDF; the 2026 one returned 403. I uploaded the CSVs to Drive myself. The automated Drive upload is written but has not run with real credentials.
+I built a small scraper with one adapter per exchange. It writes one CSV per exchange plus a combined file, and validates them. There are 75 rows: NYSE 34, NASDAQ 12, OPRA 14 and CME 15. NYSE and NASDAQ match on every closed day and early close in 2026, which is the year the Task C data sits in. The overall result is WARN, not FAIL, and the warnings are about which years each source has published, not about wrong dates. I uploaded the CSVs to Drive myself. The automated Drive upload is written but has not run with real credentials.
 
 ---
 
-## Slide 7 — Section: Data consistency
+## Slide 7 — CME matches NYSE on every 2027 date
+
+CME's website blocks scripts and its terms forbid scraping, so I don't scrape it. Instead I downloaded the Trading Hours holiday spreadsheets by hand: Thanksgiving and Christmas 2026, and the full 2027 set. The adapter reads the Equities row of each file. An empty cell means closed, and a close before the normal 4 pm Central means an early close. That gives 15 CME rows. For 2027, CME and NYSE agree on all ten closures and on the early close after Thanksgiving; the validator now checks that automatically. NASDAQ only publishes the current year and OPRA hasn't published 2026 or 2027 yet, so those rows are missing rather than guessed.
+
+---
+
+## Slide 8 — Section: Data consistency
 
 Data consistency. About 15 minutes. What is right, and the problems that do not raise an error
 
 ---
 
-## Slide 8 — What is right: the basics are clean
+## Slide 9 — What is right: the basics are clean
 
 I want to say what works before the problems. Across all twelve series there are no misaligned timestamps, nothing out of order, no NaN prices. Equities are empty on every NYSE holiday, matching Task A, and EUR/USD trades through them, which is correct. The 21 duplicates come from toTime being inclusive, and they carry identical values, so dropping them is safe.
 
 ---
 
-## Slide 9 — Every quote is exactly 15 minutes old
+## Slide 10 — Every quote is exactly 15 minutes old
 
 Quote age sits on nine hundred seconds for every symbol, on every surface. That's fine for a demo, but nothing in the response says it is delayed. A client who builds a 'data is stale' alert from zero will page all day. I'd want the delay in the payload.
 
 ---
 
-## Slide 10 — History stops at 8,000 candles and still says OK
+## Slide 11 — History stops at 8,000 candles and still says OK
 
 This is the one I'd escalate first. I asked for two weeks of one-minute AAPL and got the newest eight thousand, with status OK. The decisive test was a window completely before that edge: OK again, empty body. It may well be an intentional demo quota, and that's fine. The problem is the silence. A truncated flag, or one sentence in the docs, fixes it. I can show this live with chunks.jsonl.
 
 ---
 
-## Slide 11 — Hourly volume breaks outside regular hours
+## Slide 12 — Hourly volume breaks outside regular hours
 
 This is the most interesting finding. Each cell is one hour; red means the served hourly bar has more volume than its five-minute bars add up to. The boxed regular-hours block is white, and outside it the difference goes up to 99 percent. There is one blue cell inside regular hours, 8 October 11:00 ET, plus 2 percent the other way. TSLA has two exceptions on the same day and hours, which points to a market-wide event, not an AAPL thing. Re-fetching 11 minutes later gave the same values. The test that would explain it needs TimeAndSale, and that timed out on the demo. So: real pattern, cause open.
 
 ---
 
-## Slide 12 — Which volume is right? Not decided yet
+## Slide 13 — Which volume is right? Not decided yet
 
 This slide changed my advice. My first draft said 'build extended-hours analytics from one-minute data'. The data doesn't support that: on the only day with a daily candle, the hourly sum is slightly closer. One data point, so I don't pick a winner. tho=true might be a workaround but I never tested it.
 
 ---
 
-## Slide 13 — Prices are almost, not perfectly, consistent
+## Slide 14 — Prices are almost, not perfectly, consistent
 
 I'm correcting myself here. An earlier draft said prices always agree. They nearly do. Three of the six differences are the bar that was still forming, which is expected. Three are complete hours, and two of those are TSLA on 8 October, the same block as the volume exception. Small, but I'd rather say it.
 
 ---
 
-## Slide 14 — EUR/USD prints 50 candles while FX is closed
+## Slide 15 — EUR/USD prints 50 candles while FX is closed
 
 FX trades Sunday 17:00 to Friday 17:00 New York time. My first count used the UTC weekday and got 214, but 170 of those are just the Sunday reopen. Against the real session it's 50. They might be indicative quotes or a heartbeat; I set up a weekend logger to tell them apart, but it stopped on Saturday, so that stays open. The client risk is session logic: 'last candle is fresh' would call FX open on Sunday morning.
 
 ---
 
-## Slide 15 — Edge cases
+## Slide 16 — Edge cases
 
 These are the small ones. None of them throws an error, which is exactly why they turn into tickets. My favourite is the 2038 date: if you open the stream inside the delay window you get NaN candles dated 2038. A parser that ignores the flags stores them. Radar versus REST is just different symbol lists, but support will hear 'it works in Radar' a lot.
 
 ---
 
-## Slide 16 — Section: Behaviour under load
+## Slide 17 — Section: Behaviour under load
 
 Behaviour under load. About 9 minutes. What happens when one client adds parallel requests
 
 ---
 
-## Slide 17 — More workers did not buy more throughput
+## Slide 18 — More workers did not buy more throughput
 
 Market-hours run. Left: throughput measured through completion. It jumps from one to five workers and then stays flat around three requests a second, and drops a little at fifty. Right: latency. Median goes from half a second to eight seconds, p95 to twenty-six. I want to be careful about two things. An earlier version said throughput rose to 4.6; that number ignored requests still in flight, and it's wrong. And these are seconds. Zero errors, no 429, no Retry-After: the service queues, it never tells the client to back off.
 
 ---
 
-## Slide 18 — Latency by request type
+## Slide 19 — Latency by request type
 
 Queueing isn't uniform. Quotes stay fairly quick while both candle requests wait eleven or twelve seconds. That fits per-request cost or separate queues, not one simple line. On the right, the timeout for an unknown symbol: three seconds alone, twenty-nine under load, because queue time is added before the server's own timeout starts. A dashboard mixing quotes and candles will look half alive.
 
 ---
 
-## Slide 19 — Bottleneck
+## Slide 20 — Bottleneck
 
 The first question I asked myself was whether I was the bottleneck. Little's law says no: at five and ten workers the average in flight equals the setting, so they were all waiting on the server. The pool allowed 52 connections and I never ran more than 50. What I can't say is whether the cap is per IP or shared with other demo users. That needs a second client at the same time, and I didn't run it. If anyone asks for a production number: I won't extrapolate one from a free demo.
 
 ---
 
-## Slide 20 — Section: Risk, incident and improvements
+## Slide 21 — Section: Risk, incident and improvements
 
 Risk, incident and improvements. About 10 minutes. What I would escalate, how I'd run the incident, what I'd fix
 
 ---
 
-## Slide 21 — Risks
+## Slide 22 — Risks
 
 I ranked risks by how often I actually saw them and how much damage they do if nobody notices. Silent ones go to the top: the 8,000 cap, the volume difference, and staleness that looks like a closed market. Queueing without a 429 is next. The FX prints are real but low impact if clients use a proper session calendar.
 
 ---
 
-## Slide 22 — Incident drill
+## Slide 23 — Incident drill
 
 The scenario is invented, the numbers are real. A quant client's nightly reconciliation flags the 18:00 hour. In the first fifteen minutes I reproduce it from public endpoints, count how many hours are affected, check five-minute against one-minute, and escalate with the CSV and one clear question. The client message gives facts and a next-update time. It doesn't guess a cause and it doesn't offer tho=true, because I never tested it.
 
 ---
 
-## Slide 23 — Improvements
+## Slide 24 — Improvements
 
 Three proposals. The technical one matters most, because a truncated flag fixes the silent cap with an additive JSON field. Monitoring: the scripts I wrote are most of a probe already; what's missing is wiring and a session calendar. Documentation is the cheapest: one page, and my report is the draft.
 
 ---
 
-## Slide 24 — Corrections
+## Slide 25 — Corrections
 
 I'd rather show you this than have you find it. Each of these was in an earlier draft. The offline re-check caught all four, and every slide today uses the corrected numbers.
 
 ---
 
-## Slide 25 — Open items
+## Slide 26 — Open items
 
 If you ask what I didn't verify, this is the answer. Pass 2 and the logger are only waiting on the clock. The volume cause is blocked because the demo doesn't serve TimeAndSale history. The rest I simply didn't run, and I'm not going to present them as results.
 
 ---
 
-## Slide 26 — Questions
+## Slide 27 — Questions
 
 That's it from me. If you ask whether the 8,000 cap is just a quota: possibly, and the missing signal is still the defect. If you ask about production capacity: the monitoring design transfers, the numbers don't.
 
@@ -188,7 +194,7 @@ A: No. AAPL 1, TSLA 2 in the sample. Wording was corrected; pattern remains over
 A: The pool limit (52) is above the max concurrency (50), so it could never bind. Whether the cap is per-IP or shared capacity is unresolved; a second client was not run.
 
 **Q: What did you not verify?**  
-A: Pass 2 / complete weekend analysis (Monday); TimeAndSale root cause; second client for load; Task A Drive/CME are separate.
+A: Pass 2 / complete weekend analysis (Monday); TimeAndSale root cause; second client for load; for Task A, the Drive API upload and NASDAQ 2027 / OPRA 2026–27 (not published yet).
 
 **Q: Was the load test polite?**  
 A: Auto-stop p50>8s, think time, budgets, no 429 observed; full request logs in evidence/load/.

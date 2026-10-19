@@ -10,7 +10,7 @@ scraper/
   adapters/nyse.py      nyse.com table + early-close footnotes (3 years)
   adapters/nasdaq.py    nasdaqtrader.com table; Playwright fallback for nasdaq.com
   adapters/opra.py      opraplan.com yearly PDF notices (pdfplumber)
-  adapters/cme.py       operator-downloaded PDFs/CSV (site blocks automation, see below)
+  adapters/cme.py       operator-downloaded xlsx/PDF/CSV (site blocks automation, see below)
   normalize.py          canonical names, dedup, local -> UTC with zoneinfo (DST-safe)
   validate.py           automated checks + run-to-run diff
   upload_drive.py       Drive API v3 via service account; DRY_RUN mode
@@ -88,8 +88,11 @@ the adapter explicitly reported `MANUAL_INPUT_REQUIRED` (CME) or `SOURCE_UNAVAIL
   succeeded, and Playwright/Chromium were not installed), so it is **unverified**.
 - **CME is manual input.** cmegroup.com returns 403 to automated clients and its Data Terms
   of Use prohibit scraping, so the adapter reads files you download into `input/cme/`
-  (see the README there). Scope: CME Globex US Equity Index futures & options; other product
-  groups have different schedules.
+  (Trading Hours Holidays `*.xlsx`, CSV, or PDF — see the README there). Scope: CME Globex
+  US Equity Index futures & options (Equities row only); other product groups differ.
+- **Year coverage is source-limited.** NYSE lists 2026–2028 on one page. NASDAQ Trader shows
+  the current year only — 2027 is not available until they publish it. OPRA’s CDN still
+  serves the 2025 PDF; 2026/2027 schedules returned HTTP 403 when last probed.
 - **OPRA publishes one PDF per year** and the 2026 PDF did not exist on 2026-10-16, so the
   OPRA-vs-equities check is reported as skipped (WARN) rather than passed.
 - **Only the current year** is available from the NASDAQ sources; NYSE gives three years.

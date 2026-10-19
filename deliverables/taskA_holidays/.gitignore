@@ -3,5 +3,6 @@
 service_account*.json
 input/cme/*
 !input/cme/README.md
+raw/cme/
 __pycache__/
 .pytest_cache/

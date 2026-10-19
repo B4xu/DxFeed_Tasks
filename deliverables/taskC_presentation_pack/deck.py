@@ -22,7 +22,7 @@ RCH = TC / "charts"
 EV = TC / "evidence"
 TA = ROOT / "taskA_holidays" / "charts"
 DCH = HERE / "charts"
-OUT = HERE / "TaskC_Live_Presentation.pptx"
+OUT = HERE.parent.parent / "submission" / "TaskC_Live_Presentation.pptx"
 
 
 def rgb(h: str) -> RGBColor:
@@ -48,6 +48,7 @@ STATUS = {
     "hypothesis": ("HYPOTHESIS", AMBER),
     "corrected": ("VERIFIED · CORRECTED", AMBER),
     "not done": ("NOT DONE", CORAL),
+    "gaps": ("VERIFIED · GAPS LISTED", AMBER),
     "proposal": ("PROPOSAL", BLUE),
     "simulation": ("SIMULATION", SLATE),
 }
@@ -280,7 +281,7 @@ def build() -> tuple[Path, list, int]:
         ("50", "EUR/USD 1-minute candles outside the FX session", AMBER),
         ("~3 req/s", "throughput ceiling; more workers just wait longer", CORAL),
         ("0", "HTTP errors in 648 load requests, and no 429", GREEN),
-        ("60", "holiday rows from the Task A scraper", BLUE),
+        ("75", "holiday rows from the Task A scraper", BLUE),
     ])
     d.notes(s, "The short version",
             "If you remember one slide, this is it. The feed is delayed by exactly fifteen minutes. History silently "
@@ -325,19 +326,37 @@ def build() -> tuple[Path, list, int]:
     # ================================================================ 01 Task A
     d.divider("01", "Task A: holiday calendar", "The calendar Task C uses to tell a holiday from a gap", 3)
     d.wide_chart_slide(
-        "NYSE and NASDAQ agree on every 2026 date", "partial", TA / "calendar_2026.png",
-        "60 rows, weekly on GitHub Actions. CME is not scraped because its terms forbid it.",
+        "NYSE and NASDAQ agree on every 2026 date", "gaps", TA / "calendar_2026.png",
+        "75 rows from four exchanges, weekly on GitHub Actions. Validation: WARN, not FAIL.",
         "I built a small scraper with one adapter per exchange. It writes one CSV per exchange plus a combined "
-        "file, and validates them. NYSE and NASDAQ match on every closed day and early close in 2026. The "
-        "overall result is WARN, not FAIL. CME is a deliberate gap: its site terms forbid scraping, so the adapter "
-        "only reads files dropped in by hand. OPRA has only published the 2025 PDF; the 2026 one returned 403. "
-        "I uploaded the CSVs to Drive myself. The automated Drive upload is written but has not run with real "
-        "credentials.",
+        "file, and validates them. There are 75 rows: NYSE 34, NASDAQ 12, OPRA 14 and CME 15. NYSE and NASDAQ "
+        "match on every closed day and early close in 2026, which is the year the Task C data sits in. The "
+        "overall result is WARN, not FAIL, and the warnings are about which years each source has published, "
+        "not about wrong dates. I uploaded the CSVs to Drive myself. The automated Drive upload is written but "
+        "has not run with real credentials.",
         side=[
-            ("60 rows:", "NYSE 34, NASDAQ 12, OPRA 14."),
-            ("NASDAQ", "publishes the current year only."),
-            ("OPRA", "2026 PDF not out yet (403)."),
+            ("75 rows:", "NYSE 34, NASDAQ 12, OPRA 14, CME 15."),
+            ("2026:", "NYSE = NASDAQ, 0 differences."),
+            ("Years:", "NYSE 2026–28, NASDAQ 2026, OPRA 2025."),
             ("Drive:", "uploaded by hand; API path untested."),
+        ],
+        color=AMBER,
+    )
+    d.wide_chart_slide(
+        "CME matches NYSE on every 2027 date", "gaps", TA / "calendar_2027.png",
+        "CME comes from Trading Hours files I downloaded. The site itself is never scraped.",
+        "CME's website blocks scripts and its terms forbid scraping, so I don't scrape it. Instead I downloaded "
+        "the Trading Hours holiday spreadsheets by hand: Thanksgiving and Christmas 2026, and the full 2027 set. "
+        "The adapter reads the Equities row of each file. An empty cell means closed, and a close before the "
+        "normal 4 pm Central means an early close. That gives 15 CME rows. For 2027, CME and NYSE agree on all "
+        "ten closures and on the early close after Thanksgiving; the validator now checks that automatically. "
+        "NASDAQ only publishes the current year and OPRA hasn't published 2026 or 2027 yet, so those rows are "
+        "missing rather than guessed.",
+        side=[
+            ("CME:", "manual xlsx, Equities row only."),
+            ("2027:", "NYSE = CME, 0 differences."),
+            ("NASDAQ", "2027 not published yet."),
+            ("OPRA", "2026 / 2027 PDFs return 403."),
         ],
         color=AMBER,
     )
@@ -636,7 +655,7 @@ def build() -> tuple[Path, list, int]:
                                         "So the volume cause stays a hypothesis"]),
         ("Not run", SLATE, ["SPY / MSFT check of 8 Oct 11:00 ET; tho=true",
                             "Second client / IP; burst and batching tests"]),
-        ("Task A", BLUE, ["CME: manual files only (terms)", "OPRA 2026 PDF not published; Drive API untested"]),
+        ("Task A", BLUE, ["NASDAQ 2027, OPRA 2026/27 not published", "CME refresh is manual; Drive API untested"]),
     ]
     for i, (head, col, body) in enumerate(items):
         x = 0.55 + (i % 2) * 6.2
@@ -665,6 +684,7 @@ def build() -> tuple[Path, list, int]:
             "signal is still the defect. If you ask about production capacity: the monitoring design transfers, "
             "the numbers don't.")
 
+    OUT.parent.mkdir(exist_ok=True)
     d.prs.save(OUT)
     return OUT, d.parts, len(d.prs.slides)
 

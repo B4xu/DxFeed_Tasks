@@ -3,8 +3,9 @@
 Evidence paths are relative to `deliverables/taskC_assessment/evidence/` unless they start with
 `taskC_assessment/`. **No new demo traffic required** for the live talk; use offline fallbacks below.
 
-Written reports: `taskC_assessment/TaskC_Assessment_Report.docx`,
-`taskB_incident/TaskB_Incident_Report.docx`, `taskA_holidays/TaskA_Holiday_Scraper_Report.docx`.
+The deck and the written reports (Word and PDF) are in `submission/` at the repository root:
+`TaskC_Live_Presentation.pptx`, `TaskC_Assessment_Report.docx`, `TaskB_Incident_Report.docx`,
+`TaskA_Holiday_Scraper_Report.docx`.
 Rebuild everything with `python deliverables/build_all.py`.
 
 ## Finding → script → evidence → visual

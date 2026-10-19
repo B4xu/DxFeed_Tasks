@@ -87,6 +87,22 @@ def test_cme_without_input_returns_zero_rows_with_note(tmp_path):
     assert any("MANUAL_INPUT_REQUIRED" in n for n in a.notes)
 
 
+def test_cme_xlsx_equities_trading_hours(tmp_path):
+    """Operator-downloaded Trading Hours → Holidays xlsx: Equities row only."""
+    inp = tmp_path / "input" / "cme"
+    inp.mkdir(parents=True)
+    src = FIXTURES / "cme_thanksgiving_2026.xlsx"
+    (inp / src.name).write_bytes(src.read_bytes())
+    a = CmeAdapter(tmp_path / "raw", run_ts=TS, input_dir=inp)
+    rows = a.scrape()
+    by_date = {r.date: r for r in rows}
+    assert set(by_date) == {dt.date(2026, 11, 26), dt.date(2026, 11, 27)}
+    assert by_date[dt.date(2026, 11, 26)].status == "closed"
+    assert by_date[dt.date(2026, 11, 27)].status == "early_close"
+    assert by_date[dt.date(2026, 11, 27)].close_time_local == dt.time(12, 15)
+    assert "Thanksgiving" in by_date[dt.date(2026, 11, 26)].holiday_name
+
+
 def test_utc_conversion_handles_dst():
     a = NyseAdapter(Path("/tmp/x"), run_ts=TS)
     summer = a.row(dt.date(2028, 7, 3), "x", "early_close", 2028, close_local=dt.time(13, 0))

@@ -20,7 +20,7 @@ import report_kit as rk  # noqa: E402
 EV = HERE / "evidence"
 CH = HERE / "charts"
 PL = EV / "plots"
-OUT = HERE / "TaskC_Assessment_Report.docx"
+OUT = HERE.parent.parent / "submission" / "TaskC_Assessment_Report.docx"
 
 
 def load():
@@ -406,6 +406,7 @@ def build() -> Path:
     ], widths_cm=[5.4, 11.2])
 
     rk.footer(doc, "Task C — dxFeed demo assessment · evidence: deliverables/taskC_assessment/evidence/")
+    OUT.parent.mkdir(exist_ok=True)
     doc.save(OUT)
     return OUT
 

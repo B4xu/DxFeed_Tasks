@@ -21,7 +21,7 @@ from report_kit import AMBER, BLUE, CORAL, GREEN, NAVY, SLATE, TEAL, plt  # noqa
 
 OUTDIR = HERE / "output"
 CH = HERE / "charts"
-OUT = HERE / "TaskA_Holiday_Scraper_Report.docx"
+OUT = HERE.parent.parent / "submission" / "TaskA_Holiday_Scraper_Report.docx"
 EX_COLORS = {"NYSE": NAVY, "NASDAQ": TEAL, "OPRA": BLUE, "CME": CORAL}
 
 
@@ -64,15 +64,16 @@ def chart_rows(df):
     closed = [int(((df.exchange == e) & (df.status == "closed")).sum()) for e in exs]
     early = [int(((df.exchange == e) & (df.status == "early_close")).sum()) for e in exs]
     ax.bar(exs, closed, color=TEAL, label="Full-day close")
-    ax.bar(exs, early, bottom=closed, color=AMBER, label="Early close (13:00 local)")
+    ax.bar(exs, early, bottom=closed, color=AMBER, label="Early close")
     for i, (c, e) in enumerate(zip(closed, early)):
         ax.text(i, c + e + 0.6, f"{c + e}", ha="center", fontweight="bold", color=NAVY)
-    ax.annotate("0 rows: scraping forbidden,\nmanual input folder empty", (3, 0.3), xytext=(2.5, 22),
-                color=CORAL, fontsize=10, ha="center", arrowprops=dict(arrowstyle="->", color=CORAL))
+    if closed[3] + early[3] == 0:
+        ax.annotate("0 rows: scraping forbidden,\nmanual input folder empty", (3, 0.3), xytext=(2.5, 22),
+                    color=CORAL, fontsize=10, ha="center", arrowprops=dict(arrowstyle="->", color=CORAL))
     ax.set_ylabel("Rows in the published CSVs")
-    ax.set_title("What the live run on 16 October 2026 returned")
+    ax.set_title("Rows in the published CSVs (latest run)")
     ax.legend(loc="upper right")
-    ax.set_ylim(0, 40)
+    ax.set_ylim(0, max(40, max(c + e for c, e in zip(closed, early)) + 8))
     p = CH / "rows_by_exchange.png"
     fig.savefig(p)
     plt.close(fig)
@@ -100,6 +101,33 @@ def chart_calendar(df):
     ax.text(pd.Timestamp("2026-06-01"), 2.45, "OPRA source is the 2025 PDF; only 1 Jan 2026 spills into this year",
             fontsize=9, color=SLATE, ha="center")
     p = CH / "calendar_2026.png"
+    fig.savefig(p)
+    plt.close(fig)
+    return p
+
+
+def chart_calendar_2027(df):
+    import matplotlib.dates as mdates
+    d = df[df.year == 2027]
+    exs = ["NYSE", "CME", "NASDAQ", "OPRA"]
+    fig, ax = plt.subplots(figsize=(11, 3.6))
+    for i, e in enumerate(exs):
+        g = d[d.exchange == e]
+        for _, r in g.iterrows():
+            m = "o" if r.status == "closed" else "D"
+            ax.scatter(r["dt"], i, s=110, marker=m, color=EX_COLORS[e] if r.status == "closed" else AMBER,
+                       edgecolor="white", zorder=3)
+        if g.empty:
+            ax.text(pd.Timestamp("2027-07-01"), i, "no 2027 schedule published yet", ha="center", va="center",
+                    fontsize=10, color=SLATE, style="italic")
+    ax.set_yticks(range(len(exs)), exs)
+    ax.set_ylim(-0.7, len(exs) - 0.3)
+    ax.invert_yaxis()
+    ax.set_xlim(pd.Timestamp("2026-12-20"), pd.Timestamp("2028-01-05"))
+    ax.xaxis.set_major_locator(mdates.MonthLocator())
+    ax.xaxis.set_major_formatter(mdates.DateFormatter("%b"))
+    ax.set_title("2027 closures (circles) and early closes (diamonds): NYSE and CME line up exactly")
+    p = CH / "calendar_2027.png"
     fig.savefig(p)
     plt.close(fig)
     return p
@@ -139,6 +167,7 @@ def build() -> Path:
     meta = json.loads((OUTDIR / "run_meta.json").read_text())
     checks = json.loads((OUTDIR / "validation_checks.json").read_text())
     pipe, rows_png, cal, chk = chart_pipeline(), chart_rows(df), chart_calendar(df), chart_checks()
+    cal27 = chart_calendar_2027(df)
     counts = meta["counts"]
 
     rk.reset_figures()
@@ -148,7 +177,7 @@ def build() -> Path:
              "Task A · L2 Support Engineer assessment",
              [("Live run", f"{meta['run_ts'][:19].replace('T', ' ')} UTC · overall validation {meta['level']}"),
               ("Rows", f"{meta['rows']}: NYSE {counts['NYSE']}, NASDAQ {counts['NASDAQ']}, OPRA {counts['OPRA']}, CME {counts['CME']}"),
-              ("Code", "deliverables/taskA_holidays/scraper/ (Python 3.12), 11 offline tests"),
+              ("Code", "deliverables/taskA_holidays/scraper/ (Python 3.12), offline fixture tests"),
               ("Automation", ".github/workflows/trading-holidays.yml, weekly and on demand"),
               ("Published to", "Google Drive (four CSVs, uploaded by hand on 18 Oct) and the GitHub repository")])
 
@@ -160,15 +189,18 @@ def build() -> Path:
             "as a small production job rather than a one-off script: every source was inspected before a parser was "
             "written, every response body is kept on disk, every adapter fails independently, and the validation "
             "step reports problems instead of quietly fixing them.")
+    cme_n = counts.get("CME", 0)
     rk.kpi_strip(doc, [(str(meta["rows"]), "rows published", NAVY), (str(counts["NYSE"]), "NYSE, 2026–2028", TEAL),
-                       ("0", "NYSE vs NASDAQ 2026 differences", GREEN), (meta["level"], "overall validation", AMBER),
-                       ("0", "CME rows (by design)", CORAL)])
-    rk.figure(doc, rows_png, "Rows per exchange in the live run. CME is empty on purpose (see section 5.4).")
+                       ("0", "differences: NYSE vs NASDAQ 2026, NYSE vs CME 2027", GREEN),
+                       (meta["level"], "overall validation", AMBER),
+                       (str(cme_n), "CME equity index rows (manual xlsx)", CORAL)])
+    rk.figure(doc, rows_png, "Rows per exchange in the latest run. CME comes from Trading Hours xlsx files I downloaded by hand.")
     rk.para(doc,
-            "The result is WARN rather than PASS, and that is the right outcome. The equity calendars pass every "
-            "check and agree with each other date for date. The warnings are the three things I could not "
-            "legitimately fetch: CME (its terms forbid scraping), and OPRA having only a 2025 schedule online, so it "
-            "shares no year with NYSE or NASDAQ for a cross-check.")
+            "The result is WARN rather than PASS, and that is the right outcome. Every pair of sources that covers the "
+            "same year agrees: NYSE and NASDAQ on every 2026 date, NYSE and CME on every 2027 date. CME rows come from "
+            "Trading Hours Holidays Excel files I downloaded into input/cme/ (Equities row only); the site itself is "
+            "still not scraped. The warnings are year coverage: NASDAQ Trader publishes the current year only, so "
+            "2027 is not online yet, and OPRA still serves only the 2025 PDF (2026 returned 403).")
 
     # ---------------------------------------------------------------- 2
     doc.add_heading("2. The files on Google Drive", level=1)
@@ -179,8 +211,9 @@ def build() -> Path:
     rk.table(doc, ["File", "Contents", "Rows", "Size"], [
         ["trading_holidays_combined.csv", "Every exchange in one table", str(meta["rows"]), f"{sizes.get('trading_holidays_combined.csv', 0):,} B"],
         ["trading_holidays_NYSE.csv", "NYSE 2026–2028", str(counts["NYSE"]), f"{sizes.get('trading_holidays_NYSE.csv', 0):,} B"],
-        ["trading_holidays_NASDAQ.csv", "NASDAQ 2026 (only year published)", str(counts["NASDAQ"]), f"{sizes.get('trading_holidays_NASDAQ.csv', 0):,} B"],
-        ["trading_holidays_OPRA.csv", "OPRA, from the 2025 schedule PDF", str(counts["OPRA"]), f"{sizes.get('trading_holidays_OPRA.csv', 0):,} B"],
+        ["trading_holidays_NASDAQ.csv", "NASDAQ 2026 (only year published; no 2027 yet)", str(counts["NASDAQ"]), f"{sizes.get('trading_holidays_NASDAQ.csv', 0):,} B"],
+        ["trading_holidays_OPRA.csv", "OPRA, from the 2025 schedule PDF (no 2026/2027 PDF)", str(counts["OPRA"]), f"{sizes.get('trading_holidays_OPRA.csv', 0):,} B"],
+        ["trading_holidays_CME.csv", "CME Globex Equities from manual Trading Hours xlsx", str(counts.get("CME", 0)), f"{sizes.get('trading_holidays_CME.csv', 0):,} B"],
     ], widths_cm=[5.6, 6.2, 1.6, 2.6])
     rk.para(doc,
             "Not uploaded: _previous_combined.csv (the baseline for the run-to-run diff), run_meta.json and "
@@ -254,13 +287,21 @@ def build() -> Path:
             "with pdfplumber: 'HOLIDAY NAME  Month D' lines are closes, and the asterisked footnote lists the 13:00 ET "
             "early closes. On 16 October only the 2025 PDF was linked (the 2026 URL returned 403), so OPRA ships 14 "
             "rows from 2025, including 1 January 2026 printed on the 2025 notice.")
-    doc.add_heading("CME: the step that deliberately does not fetch", level=3)
+    doc.add_heading("CME: no scrape, parse operator downloads", level=3)
     rk.para(doc,
             "There is no single CME holiday calendar: equity index, rates, energy and agriculture differ, and Globex "
             "differs from ClearPort. The adapter is scoped to Globex US equity index products (ES, NQ, YM, RTY) and "
-            "reads only files an operator has downloaded into input/cme/: a CSV in a documented format or the "
-            "per-holiday PDFs. The folder was empty, so CME returned zero rows with a MANUAL_INPUT_REQUIRED note. "
-            "Scraping a site whose terms forbid it is not a trade-off I would make for a client-facing job.")
+            "never hits cmegroup.com from the job. It reads files dropped into input/cme/: Trading Hours → Holidays "
+            "Excel exports (Equities row only), a documented CSV, or per-holiday PDFs. Empty cells on the holiday "
+            "date become closed; a CLOSED before 16:00 CT becomes early_close; a day that only pre-opens the next "
+            "trade date is treated as closed. Scraping a site whose terms forbid it is not a trade-off I would make "
+            "for a client-facing job.")
+    doc.add_heading("Year coverage gaps (NASDAQ and OPRA)", level=3)
+    rk.para(doc,
+            "NYSE already publishes 2026–2028 on one page, so a refresh picks up 2027 without extra work. NASDAQ "
+            "Trader’s calendar table is current-year only; as of the last run that is 2026, and there is no honest "
+            "way to invent 2027 rows until they publish them. OPRA still links the 2025 holiday PDF; probes of the "
+            "2026 URL returned 403, and 2027 is not posted. Those gaps stay WARN/documented, not filled by guesswork.")
 
     doc.add_heading("Step 4: Normalise", level=2)
     rk.bullets(doc, [
@@ -276,6 +317,8 @@ def build() -> Path:
             "grade. Differences between exchanges are reported, never edited away.")
     rk.figure(doc, chk, "Outcome of the live run's checks.", width_cm=9.0)
     rk.figure(doc, cal, "NYSE and NASDAQ 2026 closures and early closes; the cross-check found 0 differing dates.")
+    rk.figure(doc, cal27, "2027: NYSE and CME equity index agree on all 10 closures and the day-after-Thanksgiving "
+              "early close. NASDAQ and OPRA have not published 2027 yet.")
     vrows = [[c["name"], c["level"], c["detail"]] for c in checks]
     rk.table(doc, ["Check", "Result", "Detail"], vrows, widths_cm=[4.4, 1.8, 10.4], status_col=1, font_size=8.5)
     rk.para(doc,
@@ -287,8 +330,8 @@ def build() -> Path:
 
     doc.add_heading("Step 6: Write the files and exit with a meaningful code", level=2)
     rk.para(doc,
-            "The combined CSV and one CSV per exchange that returned rows are written (CME has no file because it has "
-            "no rows), plus validation_report.md, validation_checks.json and run_meta.json. Before overwriting, the "
+            "The combined CSV and one CSV per exchange that returned rows are written, plus validation_report.md, "
+            "validation_checks.json and run_meta.json. Before overwriting, the "
             "previous combined file is copied aside so the next run can diff against it; a change of more than 30 % "
             "of rows is a FAIL. Exit code 0 means PASS or WARN, 1 means validation FAIL, 2 means an adapter crashed, "
             "and the automation treats those differently.")
@@ -301,7 +344,7 @@ def build() -> Path:
     rk.numbered(doc, [
         ("Triggers.", "Every Monday at 06:17 UTC, plus a manual run with an exchange list and an upload switch."),
         ("Setup.", "Python 3.12, requirements.txt and Playwright's Chromium for the NASDAQ fallback."),
-        ("Tests first.", "python -m pytest tests -q runs 11 tests on saved fixtures, no network."),
+        ("Tests first.", "python -m pytest tests -q runs the offline fixture suite, no network."),
         ("Run with retries that make sense.", "Up to three attempts with backoff for a crash (exit 2); a validation FAIL (exit 1) stops immediately because retrying will not fix a bad calendar."),
         ("Report.", "The validation report goes into the run summary; output/ and raw/ are kept as a 90-day artifact."),
         ("Publish.", "With the Drive secrets set the files are uploaded; without them the job runs in DRY_RUN. The refreshed CSVs are committed back to the repository, skipping missing files and empty commits."),
@@ -322,8 +365,9 @@ def build() -> Path:
     doc.add_heading("5. What was not done, and why", level=1)
     rk.table(doc, ["Item", "Status", "Why"], [
         ["Drive upload through the API", "Partial", "No service account in this environment; files uploaded by hand, API path unverified"],
-        ["CME rows", "Not done", "cmegroup.com returns 403 and its terms forbid scraping; manual input required"],
-        ["OPRA 2026", "Blocked", "Not published yet; the 2026 PDF URL returned 403"],
+        ["CME automated scrape", "Not done", "403 + Data Terms of Use; rows come from manual Trading Hours xlsx instead"],
+        ["NASDAQ 2027", "Not published", "nasdaqtrader.com calendar is current year only; no 2027 table to fetch"],
+        ["OPRA 2026 / 2027", "Blocked", "2026 PDF URL returned 403; 2027 not posted on opraplan.com"],
         ["nasdaq.com via Playwright, live", "Partial", "Tested on a saved page; not needed live"],
         ["Cross-check with a third-party holiday library", "Not done", "Considered; the NYSE–NASDAQ cross-check already covers 2026"],
     ], widths_cm=[5.2, 2.4, 9.0], status_col=1)
@@ -338,6 +382,7 @@ def build() -> Path:
     ])
 
     rk.footer(doc, "Task A — trading-holiday scraper · deliverables/taskA_holidays/")
+    OUT.parent.mkdir(exist_ok=True)
     doc.save(OUT)
     return OUT
 

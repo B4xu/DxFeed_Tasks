@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Export the three Word reports and the Task C deck to PDF next to the originals.
+"""Export the three Word reports and the Task C deck in submission/ to PDF next to the originals.
 
 Needs LibreOffice: either `soffice` on PATH or the Flatpak org.libreoffice.LibreOffice.
 """
@@ -11,11 +11,12 @@ import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
+SUBMISSION = HERE.parent / "submission"
 FILES = [
-    HERE / "taskC_assessment" / "TaskC_Assessment_Report.docx",
-    HERE / "taskB_incident" / "TaskB_Incident_Report.docx",
-    HERE / "taskA_holidays" / "TaskA_Holiday_Scraper_Report.docx",
-    HERE / "taskC_presentation_pack" / "TaskC_Live_Presentation.pptx",
+    SUBMISSION / "TaskC_Assessment_Report.docx",
+    SUBMISSION / "TaskB_Incident_Report.docx",
+    SUBMISSION / "TaskA_Holiday_Scraper_Report.docx",
+    SUBMISSION / "TaskC_Live_Presentation.pptx",
 ]
 
 
@@ -25,7 +26,7 @@ def soffice() -> list[str] | None:
     if shutil.which("flatpak"):
         ok = subprocess.run(["flatpak", "info", "org.libreoffice.LibreOffice"], capture_output=True).returncode == 0
         if ok:
-            return ["flatpak", "run", f"--filesystem={HERE}", "org.libreoffice.LibreOffice"]
+            return ["flatpak", "run", f"--filesystem={SUBMISSION}", "org.libreoffice.LibreOffice"]
     return None
 
 

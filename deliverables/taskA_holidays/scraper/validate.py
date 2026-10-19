@@ -123,6 +123,18 @@ def run_checks(df: pd.DataFrame, adapter_counts: dict[str, int], adapter_notes: 
             lvl = "PASS" if not diff else ("FAIL" if status == "closed" else "WARN")
             checks.append(Check(f"{a}_vs_{b}.{status}", lvl, f"years {sorted(common)}: {len(diff)} differing dates" + (f": only in {a}: {sorted(da - db)}; only in {b}: {sorted(db - da)}" if diff else "")))
 
+    # 6b. NYSE vs CME equity index, only for years where the CME input covers a full calendar.
+    # CME early closes are 12:00-12:15 CT, so only the dates are compared. A difference is WARN:
+    # futures and cash equities can legitimately differ.
+    cme_closed = dfd[(dfd["exchange"] == "CME") & (dfd["status"] == "closed")]
+    full_cme_years = sorted(y for y, g in cme_closed.groupby(cme_closed["dtp"].dt.year) if len(g) >= 8)
+    for y in full_cme_years:
+        for status in ("closed", "early_close"):
+            dn, dc = dates("NYSE", status, [y]), dates("CME", status, [y])
+            diff = sorted(dn ^ dc)
+            checks.append(Check(f"NYSE_vs_CME.{y}.{status}", "WARN" if diff else "PASS",
+                                f"{len(diff)} differing dates" + (f": only NYSE {sorted(dn - dc)}; only CME {sorted(dc - dn)}" if diff else "")))
+
     # 7. Good Friday vs computed Easter
     gf = dfd[dfd["canonical_name"] == "Good Friday"]
     bad = [f"{r.exchange} {r.date} (expected {good_friday(r.dtp.year)})" for r in gf.itertuples() if r.dtp.date() != good_friday(r.dtp.year)]

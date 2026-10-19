@@ -16,7 +16,7 @@ import report_kit as rk  # noqa: E402
 from report_kit import AMBER, BLUE, CORAL, GREEN, NAVY, SLATE, TEAL, plt  # noqa: E402
 
 CH = HERE / "charts"
-OUT = HERE / "TaskB_Incident_Report.docx"
+OUT = HERE.parent.parent / "submission" / "TaskB_Incident_Report.docx"
 
 
 def _box(ax, x, y, w, h, text, color, fs=11, tc="white"):
@@ -256,6 +256,7 @@ def build() -> Path:
             "the query instead of on-call killing it again next month.")
 
     rk.footer(doc, "Task B — on-call incident · source: deliverables/taskB_incident/answer.md")
+    OUT.parent.mkdir(exist_ok=True)
     doc.save(OUT)
     return OUT
 

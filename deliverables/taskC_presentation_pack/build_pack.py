@@ -18,8 +18,9 @@ def build_supporting_materials():
 Evidence paths are relative to `deliverables/taskC_assessment/evidence/` unless they start with
 `taskC_assessment/`. **No new demo traffic required** for the live talk; use offline fallbacks below.
 
-Written reports: `taskC_assessment/TaskC_Assessment_Report.docx`,
-`taskB_incident/TaskB_Incident_Report.docx`, `taskA_holidays/TaskA_Holiday_Scraper_Report.docx`.
+The deck and the written reports (Word and PDF) are in `submission/` at the repository root:
+`TaskC_Live_Presentation.pptx`, `TaskC_Assessment_Report.docx`, `TaskB_Incident_Report.docx`,
+`TaskA_Holiday_Scraper_Report.docx`.
 Rebuild everything with `python deliverables/build_all.py`.
 
 ## Finding → script → evidence → visual
@@ -115,7 +116,7 @@ def build_speaker_script(script_parts, n_slides):
             "A: The pool limit (52) is above the max concurrency (50), so it could never bind. Whether the cap is per-IP or shared capacity is unresolved; a second client was not run.",
             "",
             "**Q: What did you not verify?**  ",
-            "A: Pass 2 / complete weekend analysis (Monday); TimeAndSale root cause; second client for load; Task A Drive/CME are separate.",
+            "A: Pass 2 / complete weekend analysis (Monday); TimeAndSale root cause; second client for load; for Task A, the Drive API upload and NASDAQ 2027 / OPRA 2026–27 (not published yet).",
             "",
             "**Q: Was the load test polite?**  ",
             "A: Auto-stop p50>8s, think time, budgets, no 429 observed; full request logs in evidence/load/.",

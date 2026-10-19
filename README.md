@@ -1,11 +1,16 @@
 # dxFeed L2 Support Engineer — assessment package
 
-| Task | Folder | Main deliverable |
+The finished reports and the presentation are in [`submission/`](submission/), each as Word/PowerPoint and PDF:
+
+| Task | Report / deck in `submission/` | Source, code and evidence |
 |---|---|---|
-| A — trading-holiday scraper | [`deliverables/taskA_holidays/`](deliverables/taskA_holidays/) | `TaskA_Holiday_Scraper_Report.docx` / `.pdf`, CSVs in `output/` |
-| B — on-call incident | [`deliverables/taskB_incident/`](deliverables/taskB_incident/) | `TaskB_Incident_Report.docx` / `.pdf`, `answer.md` |
-| C — demo feed assessment | [`deliverables/taskC_assessment/`](deliverables/taskC_assessment/) | `TaskC_Assessment_Report.docx` / `.pdf`, `report.md`, `evidence/` |
-| C — live presentation | [`deliverables/taskC_presentation_pack/`](deliverables/taskC_presentation_pack/) | `TaskC_Live_Presentation.pptx` / `.pdf` (26 slides), `SPEAKER_SCRIPT.md` |
+| A — trading-holiday scraper | `TaskA_Holiday_Scraper_Report.docx` / `.pdf` | [`deliverables/taskA_holidays/`](deliverables/taskA_holidays/), CSVs in `output/` |
+| B — on-call incident | `TaskB_Incident_Report.docx` / `.pdf` | [`deliverables/taskB_incident/`](deliverables/taskB_incident/), `answer.md` |
+| C — demo feed assessment | `TaskC_Assessment_Report.docx` / `.pdf` | [`deliverables/taskC_assessment/`](deliverables/taskC_assessment/), `report.md`, `evidence/` |
+| C — live presentation | `TaskC_Live_Presentation.pptx` / `.pdf` (27 slides) | [`deliverables/taskC_presentation_pack/`](deliverables/taskC_presentation_pack/), `SPEAKER_SCRIPT.md` |
+
+The combined holiday CSV for Google Sheets is
+[`deliverables/taskA_holidays/output/trading_holidays_combined.csv`](deliverables/taskA_holidays/output/trading_holidays_combined.csv).
 
 Cross-task notes: `deliverables/executive_summary.md`, `deliverables/audit_status.md`,
 `deliverables/worklog.md`.
