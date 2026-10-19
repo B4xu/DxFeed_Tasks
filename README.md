@@ -1,4 +1,4 @@
-# dxFeed L2 Support Engineer — assessment package
+# dxFeed L1 Support Engineer — assessment package
 
 The finished reports and the presentation are in [`submission/`](submission/), each as Word/PowerPoint and PDF:
 
