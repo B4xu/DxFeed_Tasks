@@ -164,6 +164,31 @@ def cover(doc: Document, title: str, subtitle: str, task_label: str, facts: list
     doc.add_paragraph().add_run().add_break(WD_BREAK.PAGE)
 
 
+def title_page(doc: Document, title: str, subtitle: str, task_label: str, facts: list[tuple[str, str]]):
+    """Text-only title block: no colour band, no shading."""
+    p = doc.add_paragraph()
+    r = p.add_run(task_label)
+    r.font.size, r.font.color.rgb = Pt(11), _rgb(SLATE)
+    p = doc.add_paragraph()
+    r = p.add_run(title)
+    r.font.size, r.bold = Pt(24), True
+    p = doc.add_paragraph()
+    r = p.add_run(subtitle)
+    r.font.size, r.italic = Pt(12), True
+    for k, v in facts:
+        para(doc, v, bold_lead=k + ":")
+    p = doc.add_paragraph()
+    r = p.add_run(f"{AUTHOR} · {dt.date(2026, 10, 18):%d %B %Y}")
+    r.font.color.rgb = _rgb(SLATE)
+    r.italic = True
+
+
+def note(doc: Document, title: str, text: str | list[str]):
+    """Plain-text alternative to callout()."""
+    for i, line in enumerate([text] if isinstance(text, str) else text):
+        para(doc, line, bold_lead=(title + "." if i == 0 else None))
+
+
 def para(doc: Document, text: str, bold_lead: str | None = None, italic=False):
     p = doc.add_paragraph()
     if bold_lead:

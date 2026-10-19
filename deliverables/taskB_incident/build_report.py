@@ -1,9 +1,6 @@
-"""Build TaskB_Incident_Report.docx with its diagrams.
+"""Build TaskB_Incident_Report.docx (text and tables only).
 
     python build_report.py
-
-Diagrams are drawn with matplotlib into charts/. The pool-capacity chart is arithmetic from the
-scenario (100 connections, 4.8 s query), labelled as illustrative.
 """
 from __future__ import annotations
 
@@ -13,134 +10,13 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent))
 import report_kit as rk  # noqa: E402
-from report_kit import AMBER, BLUE, CORAL, GREEN, NAVY, SLATE, TEAL, plt  # noqa: E402
 
-CH = HERE / "charts"
 OUT = HERE.parent.parent / "submission" / "TaskB_Incident_Report.docx"
 
 
-def _box(ax, x, y, w, h, text, color, fs=11, tc="white"):
-    from matplotlib.patches import FancyBboxPatch
-    ax.add_patch(FancyBboxPatch((x, y), w, h, boxstyle="round,pad=0.02,rounding_size=0.08", fc=color, ec="none"))
-    ax.text(x + w / 2, y + h / 2, text, ha="center", va="center", color=tc, fontsize=fs, fontweight="bold")
-
-
-def _arrow(ax, x1, y1, x2, y2, color=SLATE, text=None):
-    ax.annotate("", (x2, y2), (x1, y1), arrowprops=dict(arrowstyle="-|>", color=color, lw=2))
-    if text:
-        ax.text((x1 + x2) / 2, (y1 + y2) / 2 + 0.12, text, ha="center", fontsize=9, color=color)
-
-
-def chain_diagram():
-    fig, ax = plt.subplots(figsize=(11, 4.6))
-    ax.set_xlim(0, 11)
-    ax.set_ylim(0, 4.6)
-    ax.axis("off")
-    _box(ax, 0.2, 2.6, 1.8, 1.0, "Client\n(enterprise)", SLATE)
-    _box(ax, 3.0, 2.6, 2.0, 1.0, "API\n5 instances", NAVY)
-    _box(ax, 6.0, 2.6, 2.2, 1.0, "Internal\nservice", TEAL)
-    _box(ax, 9.0, 2.6, 1.8, 1.0, "Database", CORAL)
-    _arrow(ax, 2.0, 3.1, 3.0, 3.1)
-    _arrow(ax, 5.0, 3.1, 6.0, 3.1, text="retries")
-    _arrow(ax, 8.2, 3.1, 9.0, 3.1)
-    ax.text(8.6, 3.75, "pool 100/100", ha="center", fontsize=9, color=SLATE)
-    notes = [
-        (1.1, "502 after\n5.1–5.3 s", CORAL),
-        (4.0, "2 of 5 at 95 % CPU\n/api/health 200 in 8 ms\n(does not touch DB)", AMBER),
-        (7.1, "pool: 100 active, 0 idle\n'context deadline exceeded'", CORAL),
-        (9.9, "query 4,800 ms", CORAL),
-    ]
-    for x, t, c in notes:
-        ax.text(x, 1.7, t, ha="center", va="top", fontsize=9.5, color=c, fontweight="bold")
-        ax.plot([x, x], [1.8, 2.55], color=c, lw=1, ls=":")
-    ax.text(5.5, 4.35, "Symptoms mapped onto the call path", ha="center", fontsize=14, fontweight="bold", color=NAVY)
-    ax.text(5.5, 0.25, "Reading: the 5 s timeouts sit at the API but the wait is downstream: a slow query holds the pool, "
-            "everything behind it queues.", ha="center", fontsize=9.5, color=SLATE, style="italic")
-    p = CH / "call_path.png"
-    fig.savefig(p)
-    plt.close(fig)
-    return p
-
-
-def timeline():
-    steps = [
-        (0, 2, "Acknowledge,\nconfirm, channel", SLATE),
-        (2, 8, "Scope: endpoint,\ninstance, tenant", BLUE),
-        (8, 20, "Walk the chain:\nAPI → service → DB", TEAL),
-        (12, 25, "Mitigate:\nkill query, cap retries", AMBER),
-        (15, 30, "Prepare escalation", CORAL),
-    ]
-    fig, ax = plt.subplots(figsize=(11, 3.8))
-    for i, (a, b, t, c) in enumerate(steps):
-        ax.barh(i, b - a, left=a, color=c, height=0.6)
-        inside = b - a >= 5
-        ax.text(a + 0.3 if inside else b + 0.3, i, t, va="center", fontsize=9,
-                color="white" if inside else c, fontweight="bold")
-    ax.axvline(30, color=CORAL, lw=2, ls="--")
-    ax.text(30.2, 4.35, "T+30: escalate", color=CORAL, fontweight="bold")
-    ax.set_yticks([])
-    ax.set_xlim(0, 34)
-    ax.set_xlabel("Minutes after the 14:02 alert")
-    ax.set_title("First 30 minutes: overlapping workstreams, not a strict sequence")
-    ax.invert_yaxis()
-    p = CH / "first_30_minutes.png"
-    fig.savefig(p)
-    plt.close(fig)
-    return p
-
-
-def pool_capacity():
-    q = [0.05, 0.2, 0.5, 1.0, 2.0, 4.8]
-    cap = [100 / x for x in q]
-    fig, ax = plt.subplots(figsize=(10, 4.2))
-    bars = ax.bar([f"{int(x * 1000)} ms" for x in q], cap, color=[GREEN, GREEN, AMBER, AMBER, CORAL, CORAL])
-    for b, v in zip(bars, cap):
-        ax.text(b.get_x() + b.get_width() / 2, v * 1.08, f"{v:,.0f}/s", ha="center", fontsize=9.5, color=NAVY, fontweight="bold")
-    ax.set_yscale("log")
-    ax.set_ylabel("Max queries/s the 100-connection pool can serve (log)")
-    ax.set_xlabel("Time each query holds a connection")
-    ax.set_title("Illustrative: a 4.8 s query cuts pool capacity to ~21 queries/s")
-    p = CH / "pool_capacity.png"
-    fig.savefig(p)
-    plt.close(fig)
-    return p
-
-
-def decision_tree():
-    fig, ax = plt.subplots(figsize=(11, 5.2))
-    ax.set_xlim(0, 11)
-    ax.set_ylim(0, 5.4)
-    ax.axis("off")
-    _box(ax, 3.6, 4.3, 3.8, 0.8, "T+30: errors still 5–8 %?", NAVY, 11)
-    _box(ax, 0.3, 2.6, 4.0, 0.9, "Yes, cause not isolated\n→ ESCALATE now (SEV-2)", CORAL, 10.5)
-    _box(ax, 6.7, 2.6, 4.0, 0.9, "No: back to baseline\nfor 15 min after a fix", GREEN, 10.5)
-    _arrow(ax, 4.6, 4.3, 2.3, 3.5, CORAL, "yes")
-    _arrow(ax, 6.4, 4.3, 8.7, 3.5, GREEN, "no")
-    _box(ax, 0.3, 0.4, 4.0, 1.7, "Backend on-call (pool, retries, query)\nDB / platform on-call (locks, sessions)\nIncident commander (comms)\nOne message, then a bridge", NAVY, 9.5)
-    _box(ax, 6.7, 0.4, 4.0, 1.7, "Ticket to owning team with evidence\nfor the root-cause fix;\nkeep monitoring;\nlower severity", TEAL, 9.5)
-    _arrow(ax, 2.3, 2.6, 2.3, 2.1)
-    _arrow(ax, 8.7, 2.6, 8.7, 2.1)
-    ax.text(5.5, 2.0, "Escalate earlier if:\n> 10 % errors\nmore endpoints/tenants\nSLA at risk\na mitigation backfires",
-            ha="center", va="center", fontsize=9, color=AMBER, fontweight="bold")
-    p = CH / "escalation_decision.png"
-    fig.savefig(p)
-    plt.close(fig)
-    return p
-
-
 def build() -> Path:
-    CH.mkdir(exist_ok=True)
-    rk.mpl_style()
-    for k in ("axes.grid",):
-        plt.rcParams[k] = True
-    chain = chain_diagram()
-    tl = timeline()
-    pool = pool_capacity()
-    tree = decision_tree()
-
-    rk.reset_figures()
     doc = rk.new_document()
-    rk.cover(doc, "On-call incident: API error rate 0.2 % → 7 %",
+    rk.title_page(doc, "On-call incident: API error rate 0.2 % → 7 %",
              "Investigation plan, escalation decision at T+30 and three preventive improvements",
              "Task B · L2 Support Engineer assessment",
              [("Alert", "14:02 — API error rate jumps from 0.2 % to 7 %"),
@@ -157,10 +33,12 @@ def build() -> Path:
             "milliseconds is taking 4.8 seconds. A slow query holding connections, amplified by retries, is the "
             "most likely story. The green health check is not evidence of health, because it never touches the "
             "database.")
-    rk.kpi_strip(doc, [("7 %", "error rate (from 0.2 %)", CORAL), ("5 s", "upstream timeout hit", AMBER),
-                       ("100/100", "pool connections busy", CORAL), ("4.8 s", "slow query", NAVY),
-                       ("T+30", "escalate", TEAL)])
-    rk.figure(doc, chain, "Every symptom from the scenario placed on the call path.")
+    rk.para(doc,
+            "Placed on the call path, the symptoms line up. The client sees 502s after 5.1–5.3 s. At the API, two of "
+            "five instances run at 95 % CPU while /api/health answers 200 in 8 ms without touching the database. The "
+            "internal service retries, its pool shows 100 active and 0 idle connections and logs 'context deadline "
+            "exceeded'. The database has a query taking 4,800 ms. The timeouts surface at the API, but the waiting "
+            "happens downstream.")
     doc.add_heading("2. Investigation plan", level=1)
     doc.add_heading("2.1 First five minutes: golden signals per tier", level=2)
     rk.para(doc,
@@ -174,7 +52,10 @@ def build() -> Path:
         ["Saturation", "CPU 95 % on 2 of 5; threads", "Pool 100/100/0; threads; GC", "CPU/IO; connections vs max; replica lag"],
     ], widths_cm=[2.4, 4.6, 4.8, 4.8])
     doc.add_heading("2.2 The steps", level=2)
-    rk.figure(doc, tl, "How the first thirty minutes overlap.")
+    rk.para(doc,
+            "The steps overlap rather than run strictly one after another: scoping runs from minute 2 to 8, walking "
+            "the chain from 8 to 20, mitigation from about 12 to 25, and from minute 15 I start preparing the "
+            "escalation so it is ready at T+30.")
     rk.para(doc,
             "Confirm the alert and the customer report describe the same thing (502s on /api/orders, not a dashboard "
             "artefact), note the exact start time from the metric and open an incident channel with a running "
@@ -193,7 +74,13 @@ def build() -> Path:
             "and pool metrics. At the database: locks, long-running statements, the 4.8-second query, and any plan "
             "or statistics change that makes an old query slow without code changing.",
             bold_lead="Step 2 (minutes 8–20): walk the chain from the outside in.")
-    rk.figure(doc, pool, "Why one slow query is enough: a pool's throughput is its size divided by how long each query holds a connection (Little's law).")
+    rk.para(doc,
+            "A pool can serve at most its size divided by how long each query holds a connection (Little's law). "
+            "With 100 connections and 50 ms queries that is about 2,000 queries per second; at 4.8 s it drops to "
+            "about 21. A handful of slow queries therefore starves every other request of a connection, which is "
+            "why one slow query is enough to explain the whole picture. These numbers are illustrative arithmetic "
+            "from the scenario, not measurements.",
+            bold_lead="Why one slow query is enough.")
 
     doc.add_heading("2.3 Ranked hypotheses", level=2)
     rk.table(doc, ["#", "Hypothesis", "Confirms it", "Rejects it"], [
@@ -215,16 +102,21 @@ def build() -> Path:
         ["Raise pool size or timeout", "Only with clear DB headroom", "Bigger pool loads a slow DB more; longer timeout hides the problem"],
         ["Rate-limit the expensive endpoint for one tenant", "Protects other customers", "That tenant sees more errors"],
     ], widths_cm=[5.4, 5.0, 6.2])
-    rk.callout(doc, "Quantifying impact", "Failed requests per minute = error rate × request rate; number of tenants above "
-               "1 % errors; the enterprise customer's failure share; duration so far; SLA budget burned. Every "
-               "mitigation gets a timestamp and an observed effect in the timeline.", TEAL)
+    rk.note(doc, "Quantifying impact", "Failed requests per minute = error rate × request rate; number of tenants "
+            "above 1 % errors; the enterprise customer's failure share; duration so far; SLA budget burned. Every "
+            "mitigation gets a timestamp and an observed effect in the timeline.")
     doc.add_heading("3. Escalation decision at T+30", level=1)
     rk.para(doc,
             "Thirty minutes in, the error rate still swings between 5 and 8 %, CPU is still high on two instances, and "
             "the cause is not isolated. I escalate now, and I would have had the message drafted at T+15 when the "
             "first mitigations did not hold. The reasons are customer impact on an order endpoint, thirty minutes "
             "without a stable fix, and evidence pointing at a database and pool problem that L2 cannot fix alone.")
-    rk.figure(doc, tree, "The T+30 decision and what would change it.")
+    rk.para(doc,
+            "The escalation goes to the backend on-call (pool, retries, the query), the database or platform on-call "
+            "(locks, sessions) and an incident commander for communication: one message first, then a bridge. I "
+            "would escalate before T+30 if errors went above 10 %, more endpoints or tenants were affected, the SLA "
+            "was at risk, or a mitigation made things worse.",
+            bold_lead="Who and when.")
     doc.add_heading("What the escalation message contains", level=2)
     rk.bullets(doc, [
         ("Timeline:", "14:02 alert, then each check and mitigation with time and effect."),

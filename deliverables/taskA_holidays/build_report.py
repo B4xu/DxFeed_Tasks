@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Build TaskA_Holiday_Scraper_Report.docx (and its charts) from the saved live run.
+"""Build TaskA_Holiday_Scraper_Report.docx (text and tables only) from the saved live run.
 
     python build_report.py
 
-Reads output/ only — no network. Charts go to charts/.
+Reads output/ only — no network.
 """
 from __future__ import annotations
 
@@ -17,12 +17,9 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent))
 sys.path.insert(0, str(HERE))
 import report_kit as rk  # noqa: E402
-from report_kit import AMBER, BLUE, CORAL, GREEN, NAVY, SLATE, TEAL, plt  # noqa: E402
 
 OUTDIR = HERE / "output"
-CH = HERE / "charts"
 OUT = HERE.parent.parent / "submission" / "TaskA_Holiday_Scraper_Report.docx"
-EX_COLORS = {"NYSE": NAVY, "NASDAQ": TEAL, "OPRA": BLUE, "CME": CORAL}
 
 
 def _df():
@@ -30,123 +27,6 @@ def _df():
     df["dt"] = pd.to_datetime(df["date"])
     df["year"] = df["dt"].dt.year
     return df
-
-
-def chart_pipeline():
-    from matplotlib.patches import FancyBboxPatch
-    fig, ax = plt.subplots(figsize=(11.5, 3.6))
-    ax.set_xlim(0, 11.8)
-    ax.set_ylim(0, 3.6)
-    ax.axis("off")
-    stages = [("Sources\nNYSE, NASDAQ,\nOPRA, CME files", SLATE), ("Adapters\npolite fetch\n+ parse", NAVY),
-              ("Normalise\nUTC times,\nnames", TEAL), ("Validate\ngrade checks\nPASS/WARN/FAIL", AMBER),
-              ("Write\nCSV per\nexchange", GREEN), ("Publish\nDrive · GitHub\nartifact", BLUE)]
-    w, gap = 1.72, 0.22
-    for i, (t, c) in enumerate(stages):
-        x = 0.15 + i * (w + gap)
-        ax.add_patch(FancyBboxPatch((x, 1.0), w, 1.6, boxstyle="round,pad=0.02,rounding_size=0.1", fc=c, ec="none"))
-        ax.text(x + w / 2, 1.8, t, ha="center", va="center", color="white", fontsize=8.8, fontweight="bold")
-        if i < len(stages) - 1:
-            ax.annotate("", (x + w + gap - 0.02, 1.8), (x + w + 0.02, 1.8),
-                        arrowprops=dict(arrowstyle="-|>", color=SLATE, lw=2))
-    ax.text(5.75, 3.25, "One run, one timestamp, six stages", ha="center", fontsize=14, fontweight="bold", color=NAVY)
-    ax.text(5.75, 0.45, "raw/ keeps every fetched body · a crash in one adapter never stops the others · "
-            "exit 0 PASS/WARN, 1 FAIL, 2 crash", ha="center", fontsize=9.5, color=SLATE, style="italic")
-    p = CH / "pipeline.png"
-    fig.savefig(p)
-    plt.close(fig)
-    return p
-
-
-def chart_rows(df):
-    fig, ax = plt.subplots(figsize=(10, 4.2))
-    exs = ["NYSE", "NASDAQ", "OPRA", "CME"]
-    closed = [int(((df.exchange == e) & (df.status == "closed")).sum()) for e in exs]
-    early = [int(((df.exchange == e) & (df.status == "early_close")).sum()) for e in exs]
-    ax.bar(exs, closed, color=TEAL, label="Full-day close")
-    ax.bar(exs, early, bottom=closed, color=AMBER, label="Early close")
-    for i, (c, e) in enumerate(zip(closed, early)):
-        ax.text(i, c + e + 0.6, f"{c + e}", ha="center", fontweight="bold", color=NAVY)
-    if closed[3] + early[3] == 0:
-        ax.annotate("0 rows: scraping forbidden,\nmanual input folder empty", (3, 0.3), xytext=(2.5, 22),
-                    color=CORAL, fontsize=10, ha="center", arrowprops=dict(arrowstyle="->", color=CORAL))
-    ax.set_ylabel("Rows in the published CSVs")
-    ax.set_title("Rows in the published CSVs (latest run)")
-    ax.legend(loc="upper right")
-    ax.set_ylim(0, max(40, max(c + e for c, e in zip(closed, early)) + 8))
-    p = CH / "rows_by_exchange.png"
-    fig.savefig(p)
-    plt.close(fig)
-    return p
-
-
-def chart_calendar(df):
-    d = df[df.year == 2026]
-    fig, ax = plt.subplots(figsize=(11, 3.4))
-    exs = ["NYSE", "NASDAQ", "OPRA"]
-    for i, e in enumerate(exs):
-        g = d[d.exchange == e]
-        for _, r in g.iterrows():
-            m = "o" if r.status == "closed" else "D"
-            ax.scatter(r["dt"], i, s=110, marker=m, color=EX_COLORS[e] if r.status == "closed" else AMBER,
-                       edgecolor="white", zorder=3)
-    ax.set_yticks(range(len(exs)), exs)
-    ax.set_ylim(-0.7, len(exs) - 0.3)
-    ax.invert_yaxis()
-    ax.set_xlim(pd.Timestamp("2025-12-20"), pd.Timestamp("2027-01-05"))
-    import matplotlib.dates as mdates
-    ax.xaxis.set_major_locator(mdates.MonthLocator())
-    ax.xaxis.set_major_formatter(mdates.DateFormatter("%b"))
-    ax.set_title("2026 closures (circles) and early closes (diamonds): NYSE and NASDAQ line up exactly")
-    ax.text(pd.Timestamp("2026-06-01"), 2.45, "OPRA source is the 2025 PDF; only 1 Jan 2026 spills into this year",
-            fontsize=9, color=SLATE, ha="center")
-    p = CH / "calendar_2026.png"
-    fig.savefig(p)
-    plt.close(fig)
-    return p
-
-
-def chart_calendar_2027(df):
-    import matplotlib.dates as mdates
-    d = df[df.year == 2027]
-    exs = ["NYSE", "CME", "NASDAQ", "OPRA"]
-    fig, ax = plt.subplots(figsize=(11, 3.6))
-    for i, e in enumerate(exs):
-        g = d[d.exchange == e]
-        for _, r in g.iterrows():
-            m = "o" if r.status == "closed" else "D"
-            ax.scatter(r["dt"], i, s=110, marker=m, color=EX_COLORS[e] if r.status == "closed" else AMBER,
-                       edgecolor="white", zorder=3)
-        if g.empty:
-            ax.text(pd.Timestamp("2027-07-01"), i, "no 2027 schedule published yet", ha="center", va="center",
-                    fontsize=10, color=SLATE, style="italic")
-    ax.set_yticks(range(len(exs)), exs)
-    ax.set_ylim(-0.7, len(exs) - 0.3)
-    ax.invert_yaxis()
-    ax.set_xlim(pd.Timestamp("2026-12-20"), pd.Timestamp("2028-01-05"))
-    ax.xaxis.set_major_locator(mdates.MonthLocator())
-    ax.xaxis.set_major_formatter(mdates.DateFormatter("%b"))
-    ax.set_title("2027 closures (circles) and early closes (diamonds): NYSE and CME line up exactly")
-    p = CH / "calendar_2027.png"
-    fig.savefig(p)
-    plt.close(fig)
-    return p
-
-
-def chart_checks():
-    checks = json.loads((OUTDIR / "validation_checks.json").read_text())
-    lv = pd.Series([c["level"] for c in checks]).value_counts()
-    fig, ax = plt.subplots(figsize=(5.2, 4.2))
-    labels = [k for k in ("PASS", "WARN", "FAIL") if k in lv]
-    colors = {"PASS": GREEN, "WARN": AMBER, "FAIL": CORAL}
-    ax.pie([lv[k] for k in labels], labels=[f"{k}\n{lv[k]}" for k in labels], colors=[colors[k] for k in labels],
-           startangle=90, wedgeprops=dict(width=0.38, edgecolor="white"), textprops=dict(fontsize=11, fontweight="bold"))
-    ax.text(0, 0, f"{len(checks)}\nchecks", ha="center", va="center", fontsize=14, fontweight="bold", color=NAVY)
-    ax.set_title("Validation outcome, live run")
-    p = CH / "validation_checks.png"
-    fig.savefig(p)
-    plt.close(fig)
-    return p
 
 
 def early_close_counts(df):
@@ -161,25 +41,21 @@ def early_close_counts(df):
 
 
 def build() -> Path:
-    CH.mkdir(exist_ok=True)
-    rk.mpl_style()
     df = _df()
     meta = json.loads((OUTDIR / "run_meta.json").read_text())
     checks = json.loads((OUTDIR / "validation_checks.json").read_text())
-    pipe, rows_png, cal, chk = chart_pipeline(), chart_rows(df), chart_calendar(df), chart_checks()
-    cal27 = chart_calendar_2027(df)
     counts = meta["counts"]
+    levels = pd.Series([c["level"] for c in checks]).value_counts()
 
-    rk.reset_figures()
     doc = rk.new_document()
-    rk.cover(doc, "Trading-holiday scraper",
+    rk.title_page(doc, "Trading-holiday scraper",
              "How it was built, every logical step it takes, what the live run produced and what it refuses to do",
              "Task A · L2 Support Engineer assessment",
              [("Live run", f"{meta['run_ts'][:19].replace('T', ' ')} UTC · overall validation {meta['level']}"),
               ("Rows", f"{meta['rows']}: NYSE {counts['NYSE']}, NASDAQ {counts['NASDAQ']}, OPRA {counts['OPRA']}, CME {counts['CME']}"),
               ("Code", "deliverables/taskA_holidays/scraper/ (Python 3.12), offline fixture tests"),
               ("Automation", ".github/workflows/trading-holidays.yml, weekly and on demand"),
-              ("Published to", "Google Drive (four CSVs, uploaded by hand on 18 Oct) and the GitHub repository")])
+              ("Published to", "Google Drive (CSVs uploaded by hand) and the GitHub repository")])
 
     # ---------------------------------------------------------------- 1
     doc.add_heading("1. Summary", level=1)
@@ -189,12 +65,12 @@ def build() -> Path:
             "as a small production job rather than a one-off script: every source was inspected before a parser was "
             "written, every response body is kept on disk, every adapter fails independently, and the validation "
             "step reports problems instead of quietly fixing them.")
-    cme_n = counts.get("CME", 0)
-    rk.kpi_strip(doc, [(str(meta["rows"]), "rows published", NAVY), (str(counts["NYSE"]), "NYSE, 2026–2028", TEAL),
-                       ("0", "differences: NYSE vs NASDAQ 2026, NYSE vs CME 2027", GREEN),
-                       (meta["level"], "overall validation", AMBER),
-                       (str(cme_n), "CME equity index rows (manual xlsx)", CORAL)])
-    rk.figure(doc, rows_png, "Rows per exchange in the latest run. CME comes from Trading Hours xlsx files I downloaded by hand.")
+    rk.para(doc,
+            f"The latest run published {meta['rows']} rows: NYSE {counts['NYSE']} (2026–2028), NASDAQ "
+            f"{counts['NASDAQ']} (2026), OPRA {counts['OPRA']} (the 2025 schedule) and CME {counts.get('CME', 0)} "
+            f"(Thanksgiving and Christmas 2026 plus all of 2027, from Trading Hours files I downloaded by hand). "
+            f"Of the {len(checks)} validation checks, {levels.get('PASS', 0)} passed, {levels.get('WARN', 0)} warned "
+            f"and {levels.get('FAIL', 0)} failed, so the overall result is {meta['level']}.")
     rk.para(doc,
             "The result is WARN rather than PASS, and that is the right outcome. Every pair of sources that covers the "
             "same year agrees: NYSE and NASDAQ on every 2026 date, NYSE and CME on every 2027 date. CME rows come from "
@@ -205,7 +81,7 @@ def build() -> Path:
     # ---------------------------------------------------------------- 2
     doc.add_heading("2. The files on Google Drive", level=1)
     rk.para(doc,
-            "These four CSVs are the deliverable. The uploader finds each file by name and overwrites it, so a weekly "
+            "These CSVs are the deliverable. The uploader finds each file by name and overwrites it, so a weekly "
             "run never creates duplicates. That is why the names must not change.")
     sizes = {p.name: p.stat().st_size for p in OUTDIR.glob("trading_holidays_*.csv")}
     rk.table(doc, ["File", "Contents", "Rows", "Size"], [
@@ -219,8 +95,8 @@ def build() -> Path:
             "Not uploaded: _previous_combined.csv (the baseline for the run-to-run diff), run_meta.json and "
             "upload_manifest.json (internal bookkeeping), and raw/ (evidence, not the calendar). When the Drive "
             "secrets are configured the job also builds one Google Sheet, trading_holidays, with a tab per exchange "
-            "and a validation tab. The live run was a dry run; the four files above were uploaded by hand on "
-            "18 October, so the Drive API path itself is still unverified.")
+            "and a validation tab. The live run was a dry run; I uploaded the files above to Drive by hand, so the "
+            "Drive API path itself is still unverified.")
     rk.table(doc, ["Column", "Meaning"], [
         ["exchange", "NYSE, NASDAQ, OPRA or CME"],
         ["date", "Session date, ISO format"],
@@ -233,11 +109,11 @@ def build() -> Path:
 
     # ---------------------------------------------------------------- 3
     doc.add_heading("3. How the scraper works", level=1)
-    rk.figure(doc, pipe, "The six stages of a run.")
     rk.para(doc,
             "There is one entry point, python -m scraper.run. It stamps a single UTC timestamp for the whole run (so a "
             "slow adapter cannot make one file look like two runs), calls the adapters in order, normalises the rows, "
-            "validates them, writes the files and, if asked, uploads. The steps below follow that order.")
+            "validates them, writes the files and, if asked, uploads. Every fetched body is kept under raw/, and a "
+            "crash in one adapter never stops the others. The steps below follow that order.")
 
     doc.add_heading("Step 1: Reconnaissance before any parser", level=2)
     rk.para(doc,
@@ -315,10 +191,11 @@ def build() -> Path:
     rk.para(doc,
             "Validation walks the table once and grades every check PASS, WARN or FAIL. The overall result is the worst "
             "grade. Differences between exchanges are reported, never edited away.")
-    rk.figure(doc, chk, "Outcome of the live run's checks.", width_cm=9.0)
-    rk.figure(doc, cal, "NYSE and NASDAQ 2026 closures and early closes; the cross-check found 0 differing dates.")
-    rk.figure(doc, cal27, "2027: NYSE and CME equity index agree on all 10 closures and the day-after-Thanksgiving "
-              "early close. NASDAQ and OPRA have not published 2027 yet.")
+    rk.para(doc,
+            "The cross-exchange checks are the ones that matter most. NYSE and NASDAQ list the same ten closures and "
+            "the same two early closes in 2026. For 2027, where the CME files cover a full year, NYSE and CME equity "
+            "index agree on all ten closures and on the early close the day after Thanksgiving. OPRA cannot be "
+            "compared yet because its only schedule is 2025, which is why those two checks are WARN.")
     vrows = [[c["name"], c["level"], c["detail"]] for c in checks]
     rk.table(doc, ["Check", "Result", "Detail"], vrows, widths_cm=[4.4, 1.8, 10.4], status_col=1, font_size=8.5)
     rk.para(doc,
@@ -356,10 +233,11 @@ def build() -> Path:
         ["SLACK_WEBHOOK_URL", "Failure alerts", "Optional"],
         ["GDRIVE_SHARE_WITH (variable)", "Comma-separated readers to share with", "Optional"],
     ], widths_cm=[5.6, 7.6, 3.4])
-    rk.callout(doc, "What 'fetch everything' can and cannot mean",
-               "The job fetches NYSE, NASDAQ and every OPRA PDF linked from opraplan.com. It does not fetch CME and "
-               "it does not invent an OPRA 2026 calendar; CME appears automatically once an operator places its files "
-               "in input/cme/.", NAVY)
+    rk.note(doc, "What 'fetch everything' can and cannot mean",
+            "The job fetches NYSE, NASDAQ and every OPRA PDF linked from opraplan.com. It does not fetch CME and "
+            "it does not invent an OPRA 2026 calendar. CME rows appear when the downloaded files are in input/cme/; "
+            "those files are not in the repository, so the scheduled run on GitHub publishes no CME rows unless they "
+            "are provided to it.")
 
     # ---------------------------------------------------------------- 5
     doc.add_heading("5. What was not done, and why", level=1)

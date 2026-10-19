@@ -20,7 +20,6 @@ ROOT = HERE.parent
 TC = ROOT / "taskC_assessment"
 RCH = TC / "charts"
 EV = TC / "evidence"
-TA = ROOT / "taskA_holidays" / "charts"
 DCH = HERE / "charts"
 OUT = HERE.parent.parent / "submission" / "TaskC_Live_Presentation.pptx"
 
@@ -326,7 +325,7 @@ def build() -> tuple[Path, list, int]:
     # ================================================================ 01 Task A
     d.divider("01", "Task A: holiday calendar", "The calendar Task C uses to tell a holiday from a gap", 3)
     d.wide_chart_slide(
-        "NYSE and NASDAQ agree on every 2026 date", "gaps", TA / "calendar_2026.png",
+        "NYSE and NASDAQ agree on every 2026 date", "gaps", dch["cal2026"],
         "75 rows from four exchanges, weekly on GitHub Actions. Validation: WARN, not FAIL.",
         "I built a small scraper with one adapter per exchange. It writes one CSV per exchange plus a combined "
         "file, and validates them. There are 75 rows: NYSE 34, NASDAQ 12, OPRA 14 and CME 15. NYSE and NASDAQ "
@@ -343,7 +342,7 @@ def build() -> tuple[Path, list, int]:
         color=AMBER,
     )
     d.wide_chart_slide(
-        "CME matches NYSE on every 2027 date", "gaps", TA / "calendar_2027.png",
+        "CME matches NYSE on every 2027 date", "gaps", dch["cal2027"],
         "CME comes from Trading Hours files I downloaded. The site itself is never scraped.",
         "CME's website blocks scripts and its terms forbid scraping, so I don't scrape it. Instead I downloaded "
         "the Trading Hours holiday spreadsheets by hand: Thanksgiving and Christmas 2026, and the full 2027 set. "

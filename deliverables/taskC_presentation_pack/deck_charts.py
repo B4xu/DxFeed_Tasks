@@ -1,4 +1,7 @@
-"""Charts used only by the Task C deck (the report charts live in taskC_assessment/charts/)."""
+"""Charts used only by the Task C deck (the report charts live in taskC_assessment/charts/).
+
+The holiday calendars are drawn from the Task A output CSV; the Task A report itself has no charts.
+"""
 from __future__ import annotations
 
 import json
@@ -12,6 +15,7 @@ import report_kit as rk  # noqa: E402
 
 plt = rk.plt
 LOAD = ROOT / "taskC_assessment" / "evidence" / "load"
+HOLIDAYS = ROOT / "taskA_holidays" / "output" / "trading_holidays_combined.csv"
 OUT = HERE / "charts"
 
 
@@ -118,10 +122,53 @@ def incident_timeline() -> Path:
     return path
 
 
+EX_COLORS = {"NYSE": rk.NAVY, "NASDAQ": rk.TEAL, "OPRA": rk.BLUE, "CME": rk.CORAL}
+
+
+def holiday_calendar(year: int, exchanges: list[str], title: str, note: str | None = None) -> Path:
+    import matplotlib.dates as mdates
+    import pandas as pd
+    df = pd.read_csv(HOLIDAYS, dtype=str).fillna("")
+    df["dt"] = pd.to_datetime(df["date"])
+    d = df[df["dt"].dt.year == year]
+    fig, ax = plt.subplots(figsize=(11, 0.9 * len(exchanges) + 0.9))
+    for i, e in enumerate(exchanges):
+        g = d[d.exchange == e]
+        for _, r in g.iterrows():
+            closed = r.status == "closed"
+            ax.scatter(r["dt"], i, s=110, marker="o" if closed else "D",
+                       color=EX_COLORS[e] if closed else rk.AMBER, edgecolor="white", zorder=3)
+        if g.empty:
+            ax.text(pd.Timestamp(f"{year}-07-01"), i, f"no {year} schedule published yet", ha="center",
+                    va="center", fontsize=10, color=rk.SLATE, style="italic")
+    ax.set_yticks(range(len(exchanges)), exchanges)
+    ax.set_ylim(-0.7, len(exchanges) - 0.3)
+    ax.invert_yaxis()
+    ax.set_xlim(pd.Timestamp(f"{year - 1}-12-20"), pd.Timestamp(f"{year + 1}-01-05"))
+    ax.xaxis.set_major_locator(mdates.MonthLocator())
+    ax.xaxis.set_major_formatter(mdates.DateFormatter("%b"))
+    ax.set_title(title)
+    if note:
+        ax.text(pd.Timestamp(f"{year}-06-01"), len(exchanges) - 0.55, note, fontsize=9, color=rk.SLATE, ha="center")
+    path = OUT / f"calendar_{year}.png"
+    fig.savefig(path)
+    plt.close(fig)
+    return path
+
+
 def main() -> dict[str, Path]:
     OUT.mkdir(parents=True, exist_ok=True)
     rk.mpl_style()
-    return {"load": load_two_panel(), "risk": risk_matrix(), "timeline": incident_timeline()}
+    return {
+        "load": load_two_panel(), "risk": risk_matrix(), "timeline": incident_timeline(),
+        "cal2026": holiday_calendar(
+            2026, ["NYSE", "NASDAQ", "OPRA"],
+            "2026 closures (circles) and early closes (diamonds): NYSE and NASDAQ line up exactly",
+            "OPRA source is the 2025 PDF; only 1 Jan 2026 spills into this year"),
+        "cal2027": holiday_calendar(
+            2027, ["NYSE", "CME", "NASDAQ", "OPRA"],
+            "2027 closures (circles) and early closes (diamonds): NYSE and CME line up exactly"),
+    }
 
 
 if __name__ == "__main__":
